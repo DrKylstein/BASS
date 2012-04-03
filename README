@@ -1,0 +1,12 @@
+BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
+Soundblaster with MPU-401 UART compatible interfaces.
+Copyright (C) 2011  Kyle Delaney
+
+Build this program with Open Watcom's wmake utility.
+tablegen.cpp is a standalone program used to generate PC speaker note tables.
+
+Currently only PC Speaker is supported as output, via MIDI channel 1.
+Adlib has a temporary implementation for testing purposes.
+
+Note that this program requires MPU401 input to operate and will not run 
+under emulators that do not support this, such as DOSBox.

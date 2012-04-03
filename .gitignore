@@ -1,0 +1,6 @@
+*.err
+*.exe
+*.obj
+branch
+*.lnk
+*.map
