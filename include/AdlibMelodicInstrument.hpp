@@ -22,8 +22,9 @@
  */
 #ifndef ADLIB_MELODIC_INSTRUMENT_HPP
 #define ADLIB_MELODIC_INSTRUMENT_HPP
+#include "OPLDriver.hpp"
 #include "AbstInst.hpp"
-#define POLYPHONY 6
+#define MAX_POLYPHONY 9
 class AdlibMelodicInstrument: public AbstractInstrument {
 	public:
 		void playNote(unsigned char note, unsigned char velocity);
@@ -32,12 +33,14 @@ class AdlibMelodicInstrument: public AbstractInstrument {
 		void pressureChangeNote(unsigned char note, unsigned char pressure);
 		void silence();
 	
-		AdlibMelodicInstrument();
+		AdlibMelodicInstrument(OPLDriver* driver, int firstChannel, int channelCount);
 		~AdlibMelodicInstrument();
 	private:
-		unsigned char _notes[POLYPHONY]; //list of all the currently playing notes
-		unsigned char _ages[POLYPHONY]; //age of corresponding notes, 0 is the oldest.
+		unsigned char _notes[MAX_POLYPHONY]; //list of all the currently playing notes
+		unsigned char _ages[MAX_POLYPHONY]; //age of corresponding notes, 0 is the oldest.
 		int _notesHeld;
-		void writeOPL(unsigned char, unsigned char);
+		OPLDriver* _driver;
+        int _firstChannel, _channelCount;
+    
 };
 #endif

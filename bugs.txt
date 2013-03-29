@@ -1,5 +1,0 @@
-pc-speaker
--press and hold note 1, press and hold note 2, release note 1, release note 2 
-    -> note sticks (not sure which one). is not consistent for all notes?
-adlib
--no sound

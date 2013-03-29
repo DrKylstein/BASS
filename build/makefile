@@ -31,7 +31,7 @@ HDIR = ../include
 
 name = bass
 LNK = $(name).lnk
-OBJS = main.obj MidiDev.obj MidiDisp.obj BeepInst.obj DebugIns.obj AdlibMelodicInstrument.obj
+OBJS = main.obj MidiDev.obj MidiDisp.obj BeepInst.obj DebugIns.obj AdlibMelodicInstrument.obj OPLDriver.obj
 lnk_dependencies = makefile
 
 

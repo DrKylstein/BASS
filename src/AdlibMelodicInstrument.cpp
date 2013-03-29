@@ -213,27 +213,21 @@ static unsigned int NoteLookup(unsigned int note, unsigned int bend)
 }
 
 void AdlibMelodicInstrument::playNote(unsigned char note, unsigned char velocity) {
-	for(int i = 0; i < POLYPHONY; ++i) {
+	for(int i = 0; i < _channelCount; ++i) {
 		if(_notes[i] == NULL_NOTE) { //an empty channel! lets use that.
 			_notes[i] = note;
 			_ages[i] = _notesHeld;
 			++_notesHeld;
-			unsigned short freq = NoteLookup(note, 0);
-			writeOPL(0xA0+i, freq & 0xFF);
-			writeOPL(0xB0+i, freq >> 8 | 0x20);
-			std::cout << "Playing " << freq << " on channel " << i << std::endl;
+			_driver->keyOn(_firstChannel+i, NoteLookup(note, 0));
 			return;
 		}
 	}
 	//no empty channels, kick out the oldest note
-	for(int i = 0; i < POLYPHONY; ++i) {
+	for(int i = 0; i < _channelCount; ++i) {
 		if(_ages[i] == 0) { //the oldest note, lets overwrite it.
 			_notes[i] = note;
 			_ages[i] = _notesHeld; //still the same number of notes held
-			unsigned short freq = NoteLookup(note, 0);
-			writeOPL(0xA0+i, freq & 0xFF);
-			writeOPL(0xB0+i, freq >> 8 | 0x20);
-			std::cout << "Playing " << freq << " on channel " << i << std::endl;
+			_driver->keyOn(_firstChannel+i, NoteLookup(note, 0));
 		} else { //age all the other notes by one. (next oldest (1) becomes oldest (0), etc.)
 			--_ages[0];
 		}
@@ -241,19 +235,18 @@ void AdlibMelodicInstrument::playNote(unsigned char note, unsigned char velocity
 }
 void AdlibMelodicInstrument::stopNote(unsigned char note) {
 	unsigned char removedAge = NULL_NOTE;
-	for(int i = 0; i < POLYPHONY; ++i) {
+	for(int i = 0; i < _channelCount; ++i) {
 		if(_notes[i] == note) {
 			_notes[i] = NULL_NOTE;
 			removedAge = _ages[i];
 			_ages[i] = NULL_NOTE;
 			--_notesHeld;
-			writeOPL(0xB0+i, 0);
-			std::cout << "Stoping channel " << i << std::endl;
+			_driver->keyOff(_firstChannel+i);
 			break;
 		}
 	}
 	if(removedAge != NULL_NOTE) { //shift all the younger notes back to fill the gap in ages
-		for(int i=0; i < POLYPHONY; ++i) {
+		for(int i=0; i < _channelCount; ++i) {
 			if(_ages[i] != NULL_NOTE && _ages[i] > removedAge) {
 				--_ages[i];
 			}
@@ -266,32 +259,23 @@ void AdlibMelodicInstrument::pressureChangeNote(unsigned char note, unsigned cha
 }
 void AdlibMelodicInstrument::silence() {
 	_notesHeld = 0;
-	for(int i = 0; i < POLYPHONY; ++i) {
+	for(int i = 0; i < _channelCount; ++i) {
 		if(_notes[i] != NULL_NOTE) {
-			writeOPL(0xB0+i, 0);
+			_driver->keyOff(_firstChannel+i);
 		}
 		_notes[i] = NULL_NOTE;
 		_ages[i] = NULL_NOTE;
 	}
 }
-void AdlibMelodicInstrument::writeOPL(unsigned char reg, unsigned char value) {
-	outp(0x220, reg); //index write
-	for(int i = 0; i < 6; ++i) { //delay loop
-		inp(0x220);
-	}
-	outp(0x221, value); //data write
-	for(int i = 0; i < 36; ++i) { //more delay
-		inp(0x220);
-	}
-}
-AdlibMelodicInstrument::AdlibMelodicInstrument() {
+AdlibMelodicInstrument::AdlibMelodicInstrument(OPLDriver* driver, 
+    int firstChannel, int channelCount): _driver(driver), 
+    _firstChannel(firstChannel), _channelCount(channelCount) {
 	silence(); //to initialize the held note table
-	for(int i =0; i < 0xF5; ++i) {
-		writeOPL(i,0);
-	}
-	for(int i = 0; i < 9; ++i) {
-		writeOPL(0xC0+i, 0x01); //enable additive synthesis for testing purposes
+	for(int i = 0; i < _channelCount; ++i) {
+		_driver->setMode(_firstChannel+i, OPLDriver::ADDITIVE_SYNTH); //enable additive synthesis for testing purposes
+        _driver->setADSR(_firstChannel+i, 0, 0x8, 0x8, 0x8, 0x8);
 	}
 }
 AdlibMelodicInstrument::~AdlibMelodicInstrument() {
+    silence();
 }

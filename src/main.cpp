@@ -25,6 +25,7 @@
 #include "MidiDisp.hpp"
 #include "BeepInst.hpp"
 #include "DebugIns.hpp"
+#include "OPLDriver.hpp"
 #include "AdlibMelodicInstrument.hpp"
 //include <dos.h>
 //volatile int clock_ticks;
@@ -37,7 +38,7 @@
 //~ }
 
 int main() {
-	std::cout << "B.eeper A.dlib S.oundblaster S.ynth. (C) 2011 Kyle Delaney" << std::endl;
+	std::cout << "B.eeper A.dlib S.oundblaster S.ynth. (C) 2013 Kyle Delaney" << std::endl;
 	
 	//prev_int_1c = _dos_getvect( 0x1c );
 	//_dos_setvect( 0x1c, timer_rtn );
@@ -54,7 +55,9 @@ int main() {
 	speaker.transpose = 0;
 	midi.addInstrument(&speaker);
 	
-	AdlibMelodicInstrument adlib;
+    OPLDriver oplDriver;
+    
+	AdlibMelodicInstrument adlib(&oplDriver, 0, 6);
 	adlib.channel = 1;
 	adlib.startingNote = 0;
 	adlib.endingNote = 127;
@@ -68,11 +71,6 @@ int main() {
 	debug.transpose = 0;
 	midi.addInstrument(&debug);
 	
-	std::cout << "Instruments loaded." << std::endl;
-	std::cout << "Testing beeper..." << std::endl;
-	speaker.playNote(50, 127);
-	speaker.stopNote(50);
-	std::cout << "Done testing beeper." << std::endl;	
 	while(true) {
 		midi.pollEvents();
 		
