@@ -46,11 +46,14 @@ void OPLDriver::write(uint8_t reg, uint8_t value) {
 }
 void OPLDriver::silence() {
 	for(int i = 0; i < CHANNEL_COUNT; ++i) {
-        keyOff(i);
+        keyOff(i, 0);
 	}
 }
-void OPLDriver::setMode(int channel, SynthMode mode) {
-    write(0xC0+channel, mode);
+void OPLDriver::enableFM(int channel, uint8_t factor) {
+    write(0xC0+channel, factor << 1);
+}
+void OPLDriver::disableFM(int channel) {
+    write(0xC0+channel, 1);
 }
 void OPLDriver::setVolume(int channel, int op, int level) {
     int realOp = OPERATOR_MAP[channel*2 + op];
@@ -59,12 +62,22 @@ void OPLDriver::setVolume(int channel, int op, int level) {
 void OPLDriver::setADSR(int channel, int op, int attack, int decay, int sustain, int release) {
     int realOp = OPERATOR_MAP[channel*2 + op];
     write(0x60+realOp, (attack << 4) | decay);
-    write(0x80+realOp, (sustain << 4) | release);
+    write(0x80+realOp, ((0xF - sustain) << 4) | release);
 }
 void OPLDriver::keyOn(int channel, uint16_t freq) {
     write(0xA0+channel, freq & 0xFF);
     write(0xB0+channel, (freq >> 8) | 0x20);
 }
-void OPLDriver::keyOff(int channel) {
-    write(0xB0+channel, 0x00);
+void OPLDriver::keyOff(int channel, uint16_t freq) {
+    write(0xB0+channel, (freq >> 8));
 }
+void OPLDriver::setFlags(int channel, int op, bool tremolo, bool vibrato, bool sustain, bool ksr, uint8_t fmult) {
+    int realOp = OPERATOR_MAP[channel*2 + op];
+    uint8_t value = fmult & 0x0F;
+    if(tremolo) value |= 0x80;
+    if(vibrato) value |= 0x40;
+    if(sustain) value |= 0x20;
+    if(ksr) value |= 0x10;
+    write(0x20+realOp, value);
+}
+

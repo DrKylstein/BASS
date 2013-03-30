@@ -237,11 +237,11 @@ void AdlibMelodicInstrument::stopNote(unsigned char note) {
 	unsigned char removedAge = NULL_NOTE;
 	for(int i = 0; i < _channelCount; ++i) {
 		if(_notes[i] == note) {
+            _driver->keyOff(_firstChannel+i, NoteLookup(note, 0));
 			_notes[i] = NULL_NOTE;
 			removedAge = _ages[i];
 			_ages[i] = NULL_NOTE;
 			--_notesHeld;
-			_driver->keyOff(_firstChannel+i);
 			break;
 		}
 	}
@@ -261,20 +261,119 @@ void AdlibMelodicInstrument::silence() {
 	_notesHeld = 0;
 	for(int i = 0; i < _channelCount; ++i) {
 		if(_notes[i] != NULL_NOTE) {
-			_driver->keyOff(_firstChannel+i);
+			_driver->keyOff(_firstChannel+i, 0);
 		}
 		_notes[i] = NULL_NOTE;
 		_ages[i] = NULL_NOTE;
 	}
 }
+void AdlibMelodicInstrument::cc(unsigned char id, unsigned char value) {
+    switch(id) {
+        case 20:
+            _attack[0] = value >> 3;
+            _updateEnvelope();
+            break;
+        case 21:
+            _decay[0] = value >> 3;
+            _updateEnvelope();
+            break;
+        case 22:
+            _sustain[0] = value >> 3;
+            _updateEnvelope();
+            break;
+        case 23:
+            _release[0] = value >> 3;
+            _updateEnvelope();
+            break;
+        case 30:
+            _sustainEnable[0] = (value > 64);
+            _updateFlags();
+            break;
+        
+        case 24:
+            _attack[0] = value >> 3;
+            _updateEnvelope();
+            break;
+        case 25:
+            _decay[0] = value >> 3;
+            _updateEnvelope();
+            break;
+        case 26:
+            _sustain[0] = value >> 3;
+            _updateEnvelope();
+            break;
+        case 27:
+            _release[0] = value >> 3;
+            _updateEnvelope();
+            break;
+        case 46:
+            _sustainEnable[0] = (value > 64);
+            _updateFlags();
+            break;
+        
+        case 15: //op1 freq
+            _freqMult[0] = value >> 3;
+            _updateFlags();
+            break;
+        case 16: //op2 freq
+            _freqMult[1] = value >> 3;
+            _updateFlags();
+            break;
+        case 47: //FM enable
+            _fmEnable = (value > 64);
+            _updateFM();
+            break;
+        case 19: //FM factor
+            _fmFactor = value >> 4;
+            _updateFM();
+            break;   
+        
+        case 28:
+            silence();
+            break;
+        default:
+            return;
+    }
+}
+void AdlibMelodicInstrument::_updateFlags() {
+    for(int c = 0; c < _channelCount; c++) {
+        for(int o = 0; o < 2; o++) {
+            _driver->setFlags(_firstChannel+c, o, false, false, _sustainEnable[o], false, _freqMult[o]);
+        }
+	}
+}
+void AdlibMelodicInstrument::_updateEnvelope() {
+    for(int c = 0; c < _channelCount; c++) {
+        for(int o = 0; o < 2; o++) {
+            _driver->setADSR(_firstChannel+c, o, _attack[o], _decay[o], _sustain[o], _release[o] >> 3);
+        }
+    }
+}
+void AdlibMelodicInstrument::_updateFM() {
+    if(_fmEnable) {
+        for(int i = 0; i < _channelCount; i++) {
+            _driver->enableFM(_firstChannel+i, _fmFactor);
+        }
+    } else {
+        for(int i = 0; i < _channelCount; i++) {
+            _driver->disableFM(_firstChannel+i);
+        }
+    }
+}
 AdlibMelodicInstrument::AdlibMelodicInstrument(OPLDriver* driver, 
     int firstChannel, int channelCount): _driver(driver), 
-    _firstChannel(firstChannel), _channelCount(channelCount) {
+    _firstChannel(firstChannel), _channelCount(channelCount), 
+    _fmEnable(false), _fmFactor(0) {
 	silence(); //to initialize the held note table
-	for(int i = 0; i < _channelCount; ++i) {
-		_driver->setMode(_firstChannel+i, OPLDriver::ADDITIVE_SYNTH); //enable additive synthesis for testing purposes
-        _driver->setADSR(_firstChannel+i, 0, 0x8, 0x8, 0x8, 0x8);
-	}
+    _freqMult[0] = _freqMult[1] = 0;
+    _attack[0] = _attack[1] = 8;
+    _decay[0] = _decay[1] = 8;
+    _sustain[0] = _sustain[1] = 8;
+    _release[0] = _release[1] = 8;
+    _sustainEnable[0] = _sustainEnable[1] = true;
+    _updateFM();
+    _updateEnvelope();
+    _updateFlags();
 }
 AdlibMelodicInstrument::~AdlibMelodicInstrument() {
     silence();

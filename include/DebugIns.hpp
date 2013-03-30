@@ -31,5 +31,6 @@ class DebugInstrument: public AbstractInstrument
 		void pitchBend(signed int offset);
 		void pressureChangeNote(unsigned char note, unsigned char pressure);
 		void silence();
+        void cc(unsigned char id, unsigned char value);
 };
 #endif

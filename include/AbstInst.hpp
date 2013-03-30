@@ -27,7 +27,8 @@ class AbstractInstrument {
 		virtual void playNote(unsigned char note, unsigned char velocity) = 0;
 		virtual void stopNote(unsigned char note) = 0;
 		virtual void pitchBend(signed int offset) = 0;
-		virtual void pressureChangeNote(unsigned char note, unsigned char pressure) = 0;
+		virtual void pressureChangeNote(unsigned char note, unsigned char pressure) {};
+        virtual void cc(unsigned char id, unsigned char value) {};
 		virtual void silence() = 0;
 		virtual void update(int ticks) {return;}
 		unsigned char channel, startingNote, endingNote, transpose;

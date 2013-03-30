@@ -78,6 +78,13 @@ void MidiDispatcher::pollEvents() {
 							}
 						}
 						break;
+                    case 0xB0:
+						for(i=0; i < _numInstruments; ++i) {
+							if(_instruments[i]->channel == _channel) {
+								_instruments[i]->cc(_note, _velocity); //id and position of continous controller
+							}
+						}
+                        break;
 					case 0xE0:
 						for(i=0; i < _numInstruments; ++i) {
 							if(_instruments[i]->channel == _channel) {

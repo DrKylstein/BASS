@@ -61,7 +61,7 @@ int main() {
 	adlib.channel = 1;
 	adlib.startingNote = 0;
 	adlib.endingNote = 127;
-	adlib.transpose = 0;
+	adlib.transpose = -1;
 	midi.addInstrument(&adlib);
 	
 	DebugInstrument debug;

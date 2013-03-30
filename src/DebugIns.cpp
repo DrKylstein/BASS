@@ -42,3 +42,6 @@ void DebugInstrument::silence()
 {
 	std::cout << "Silenced." << std::endl;
 }
+void DebugInstrument::cc(unsigned char id, unsigned char value) {
+    std::cout << "CC ID:" << (int)id << " Value: " << (int)value << std::endl;
+}

@@ -32,6 +32,7 @@ class AdlibMelodicInstrument: public AbstractInstrument {
 		void pitchBend(signed int offset);
 		void pressureChangeNote(unsigned char note, unsigned char pressure);
 		void silence();
+        void cc(unsigned char id, unsigned char value);
 	
 		AdlibMelodicInstrument(OPLDriver* driver, int firstChannel, int channelCount);
 		~AdlibMelodicInstrument();
@@ -41,6 +42,12 @@ class AdlibMelodicInstrument: public AbstractInstrument {
 		int _notesHeld;
 		OPLDriver* _driver;
         int _firstChannel, _channelCount;
+        unsigned char _attack[2], _decay[2], _sustain[2], _release[2], _fmFactor;
+        unsigned char _freqMult[2];
+        bool _sustainEnable[2], _fmEnable;
+        void _updateEnvelope();
+        void _updateFlags();
+        void _updateFM();
     
 };
 #endif
