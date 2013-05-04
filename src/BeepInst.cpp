@@ -126,33 +126,31 @@ const unsigned short int BeeperInstrument::_timingTable[2048] = {
 };
 void BeeperInstrument::playNote(unsigned char note, unsigned char velocity) {
 	_currentNote = note;
-	_speaker->setTimer(_timingTable[( (_currentNote + 12) << 4) + (_currentBend >> 8)]);
-	_speaker->connect();
+	_speaker.setTimer(_timingTable[( (_currentNote + 12) << 4) + (_currentBend >> 8)]);
+	_speaker.connect();
 }
 void BeeperInstrument::stopNote(unsigned char note) {
 	if(note == _currentNote) {
-		_speaker->disconnect();
+		_speaker.disconnect();
 	}
 }
 void BeeperInstrument::pitchBend(signed int offset) {
 	_currentBend = offset;
-	_speaker->setTimer(_timingTable[( (_currentNote + 12) << 4) + (_currentBend >> 8)]);
+	_speaker.setTimer(_timingTable[( (_currentNote + 12) << 4) + (_currentBend >> 8)]);
 }
 void BeeperInstrument::pressureChangeNote(unsigned char note, unsigned char pressure) {
 	return;
 }
 void BeeperInstrument::silence() {
-	_speaker->disconnect();
+	_speaker.disconnect();
 }
 void BeeperInstrument::update(int ticks) {
 	_tremoloStep = _tremoloStep + ticks & 3;
-	_speaker->setTimer(_timingTable[( (_currentNote + 12) << 4) + (_currentBend >> 8) + _tremoloStep - 1]);
+	_speaker.setTimer(_timingTable[( (_currentNote + 12) << 4) + (_currentBend >> 8) + _tremoloStep - 1]);
 }
 
 BeeperInstrument::BeeperInstrument() {
-	_speaker = new Speaker();
 	_currentNote = _currentBend = _tremoloStep = 0;
 }
 BeeperInstrument::~BeeperInstrument() {
-	delete _speaker;
 }

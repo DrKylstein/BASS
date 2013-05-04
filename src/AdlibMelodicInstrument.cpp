@@ -27,6 +27,7 @@
 #include "AdlibMelodicInstrument.hpp"
 #include <conio.h>
 #include <iostream>
+#include <fstream>
 #define NULL_NOTE 255
 
 // Frequency values to use for each note.
@@ -311,14 +312,24 @@ void AdlibMelodicInstrument::cc(unsigned char id, unsigned char value) {
             _updateFlags();
             break;
         
-        case 15: //op1 freq
+        case 3: //op1 level
+            _level[0] = value >> 1;
+            _updateLevel();
+            break;
+        case 9: //op1 freq
             _freqMult[0] = value >> 3;
             _updateFlags();
             break;
-        case 16: //op2 freq
+
+        case 16: //op1 level
+            _level[0] = value >> 1;
+            _updateLevel();
+            break;
+        case 17: //op2 freq
             _freqMult[1] = value >> 3;
             _updateFlags();
             break;
+        
         case 47: //FM enable
             _fmEnable = (value > 64);
             _updateFM();
@@ -332,7 +343,7 @@ void AdlibMelodicInstrument::cc(unsigned char id, unsigned char value) {
             silence();
             break;
         default:
-            return;
+            break;
     }
 }
 void AdlibMelodicInstrument::_updateFlags() {
@@ -345,7 +356,7 @@ void AdlibMelodicInstrument::_updateFlags() {
 void AdlibMelodicInstrument::_updateEnvelope() {
     for(int c = 0; c < _channelCount; c++) {
         for(int o = 0; o < 2; o++) {
-            _driver->setADSR(_firstChannel+c, o, _attack[o], _decay[o], _sustain[o], _release[o] >> 3);
+            _driver->setADSR(_firstChannel+c, o, _attack[o], _decay[o], _sustain[o], _release[o]);
         }
     }
 }
@@ -360,6 +371,13 @@ void AdlibMelodicInstrument::_updateFM() {
         }
     }
 }
+void AdlibMelodicInstrument::_updateLevel() {
+    for(int c = 0; c < _channelCount; c++) {
+        for(int o = 0; o < 2; o++) {
+            _driver->setVolume(_firstChannel+c, o, _level[o]);
+        }
+    }
+}
 AdlibMelodicInstrument::AdlibMelodicInstrument(OPLDriver* driver, 
     int firstChannel, int channelCount): _driver(driver), 
     _firstChannel(firstChannel), _channelCount(channelCount), 
@@ -371,10 +389,13 @@ AdlibMelodicInstrument::AdlibMelodicInstrument(OPLDriver* driver,
     _sustain[0] = _sustain[1] = 8;
     _release[0] = _release[1] = 8;
     _sustainEnable[0] = _sustainEnable[1] = true;
+    _level[0] = _level[1] = OPLDriver::MAX_VOLUME;
     _updateFM();
     _updateEnvelope();
     _updateFlags();
+    _updateLevel();
 }
 AdlibMelodicInstrument::~AdlibMelodicInstrument() {
     silence();
+    
 }

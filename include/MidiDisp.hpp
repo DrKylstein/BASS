@@ -27,7 +27,7 @@ class MidiDevice;
 class AbstractInstrument;
 class MidiDispatcher {
 	public:
-		void init();
+		void init(MidiDevice* dev);
 		void addInstrument(AbstractInstrument*);
 		void pollEvents();
 		void updateModulation(int ticks);

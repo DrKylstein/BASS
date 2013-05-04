@@ -97,8 +97,8 @@ void MidiDispatcher::pollEvents() {
 		}
 	}
 }
-void MidiDispatcher::init() {
-	_dev = new MidiDevice();
+void MidiDispatcher::init(MidiDevice* dev) {
+	_dev = dev;
 	if(_dev->isDetected()) {
 		std::cout << "Using MPU401." <<std::endl;
 	} else {
@@ -111,5 +111,4 @@ MidiDispatcher::MidiDispatcher() {
 	_numInstruments = 0;
 }
 MidiDispatcher::~MidiDispatcher() {
-	if(_dev != 0) delete _dev;
 }

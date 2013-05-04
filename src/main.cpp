@@ -22,6 +22,7 @@
  */
 #include <conio>
 #include <iostream>
+#include "MidiDev.hpp"
 #include "MidiDisp.hpp"
 #include "BeepInst.hpp"
 #include "DebugIns.hpp"
@@ -43,9 +44,9 @@ int main() {
 	//prev_int_1c = _dos_getvect( 0x1c );
 	//_dos_setvect( 0x1c, timer_rtn );
 	//std::cout << "Timer initalized." << std::endl;
-	
+	MidiDevice mpu401;
 	MidiDispatcher midi;
-	midi.init();
+	midi.init(&mpu401);
 	std::cout << "Midi initalized." << std::endl;
 	
 	BeeperInstrument speaker;

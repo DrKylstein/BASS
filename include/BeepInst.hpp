@@ -22,6 +22,7 @@
  */
 #ifndef BEEPER_INSTRUMENT_HPP
 #define BEEPER_INSTRUMENT_HPP
+#include "Speaker.hpp"
 #include "AbstInst.hpp"
 class Speaker;
 class BeeperInstrument: public AbstractInstrument {
@@ -37,7 +38,7 @@ class BeeperInstrument: public AbstractInstrument {
 		~BeeperInstrument();
 	private:
 		static const unsigned short int _timingTable[2048];
-		Speaker* _speaker;
+		Speaker _speaker;
 		unsigned char _currentNote;
 		signed short _currentBend;
 		unsigned int _tremoloStep;

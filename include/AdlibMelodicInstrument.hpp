@@ -25,6 +25,16 @@
 #include "OPLDriver.hpp"
 #include "AbstInst.hpp"
 #define MAX_POLYPHONY 9
+
+
+
+struct Instrument {
+    struct OPLREGS {
+        uint8_t ksl, multiple, feedback, attack, sustain, eg, decay, release, totalLevel, am, vib, ksr, con;
+    } oplModulator, oplCarrier;
+    uint8 modWaveSelect, carWaveSelect;
+};
+
 class AdlibMelodicInstrument: public AbstractInstrument {
 	public:
 		void playNote(unsigned char note, unsigned char velocity);
@@ -33,6 +43,7 @@ class AdlibMelodicInstrument: public AbstractInstrument {
 		void pressureChangeNote(unsigned char note, unsigned char pressure);
 		void silence();
         void cc(unsigned char id, unsigned char value);
+        void programChange(int program);
 	
 		AdlibMelodicInstrument(OPLDriver* driver, int firstChannel, int channelCount);
 		~AdlibMelodicInstrument();
@@ -42,12 +53,15 @@ class AdlibMelodicInstrument: public AbstractInstrument {
 		int _notesHeld;
 		OPLDriver* _driver;
         int _firstChannel, _channelCount;
-        unsigned char _attack[2], _decay[2], _sustain[2], _release[2], _fmFactor;
-        unsigned char _freqMult[2];
+        unsigned char _attack[2], _decay[2], _sustain[2], _release[2];
+        unsigned char _fmFactor;
+        unsigned char _freqMult[2], _level[2];
         bool _sustainEnable[2], _fmEnable;
+        int _currentProgram;
         void _updateEnvelope();
         void _updateFlags();
         void _updateFM();
+        void _updateLevel();
     
 };
 #endif
