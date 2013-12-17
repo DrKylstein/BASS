@@ -20,17 +20,16 @@
  #
  #  You may contact the author at <dr.kylstein@gmail.com>
  #
-platform = DOS
+name = bass
+
 CC = wcc
 CPP = wpp
 CFLAGS = -ml
-res1_flags = -bt=dos -30
+LDFLAGS = -l=DOS -fe=../$(name).exe
 
 CDIR = ../src
 HDIR = ../include
 
-name = bass
-LNK = $(name).lnk
 OBJS = main.obj MidiDev.obj MidiDisp.obj BeepInst.obj DebugIns.obj AdlibMelodicInstrument.obj OPLDriver.obj
 lnk_dependencies = makefile
 
@@ -38,20 +37,10 @@ lnk_dependencies = makefile
 CFLAGS += -I"$(%WATCOM)/h" -I"$(%WATCOM)/lib286" -I"$(%WATCOM)/lib286/dos" -I"$(HDIR)"
 # xd = exception handling disabled
 # o: a = global variables are never accessed through pointers, l+ optimize and unroll loops
-CFLAGS += -xd -oal+ -fo=.obj
+CFLAGS += -xs -oal+ -fo=.obj
 
-../$(name).exe : $(OBJS) $(LNK)
-	wlink @$(LNK)
-    mv $(name).exe ../
-
-$(LNK) : $(lnk_dependencies)
-	%create $(LNK)
-	@%append $(LNK) debug all
-	@%append $(LNK) name $(name)
-	@%append $(LNK) op map, quiet
-	@%make linkit
-	@for %i in ($(OBJS)) do @%append $(LNK) file %i
-
+../$(name).exe : $(OBJS)
+	wcl $(LDFLAGS) $(OBJS)
 
 .EXTENSIONS:
 .EXTENSIONS: .exe
@@ -68,9 +57,6 @@ $(LNK) : $(lnk_dependencies)
 .cpp.obj :
 		$(CPP) $(CFLAGS) $[*
 
-clean:
-	rm -f *.obj *.err *.exe *.lnk *.res *.rex *.lib *.sym *.map
+clean: .SYMBOLIC
+	rm -f *.obj *.err ../$(name).exe *.lnk *.res *.rex *.lib *.sym *.map
 	rm -f *.lk1 *.mk1 *.mk
-
-linkit : .PROCEDURE
-	@%append $(LNK) system dos

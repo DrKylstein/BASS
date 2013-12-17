@@ -32,7 +32,7 @@ struct Instrument {
     struct OPLREGS {
         uint8_t ksl, multiple, feedback, attack, sustain, eg, decay, release, totalLevel, am, vib, ksr, con;
     } oplModulator, oplCarrier;
-    uint8 modWaveSelect, carWaveSelect;
+    uint8_t modWaveSelect, carWaveSelect;
 };
 
 class AdlibMelodicInstrument: public AbstractInstrument {
@@ -43,7 +43,6 @@ class AdlibMelodicInstrument: public AbstractInstrument {
 		void pressureChangeNote(unsigned char note, unsigned char pressure);
 		void silence();
         void cc(unsigned char id, unsigned char value);
-        void programChange(int program);
 	
 		AdlibMelodicInstrument(OPLDriver* driver, int firstChannel, int channelCount);
 		~AdlibMelodicInstrument();

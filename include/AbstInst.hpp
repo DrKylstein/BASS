@@ -31,8 +31,8 @@ class AbstractInstrument {
 		virtual void pitchBend(signed int offset) {};
 		virtual void pressureChangeNote(unsigned char note, unsigned char pressure) {};
         virtual void cc(unsigned char id, unsigned char value) {};
-		virtual void update(int ticks) {}
-        virtual void programChange(int program) {}
+		virtual void update(int ticks) {};
+        virtual void programChange(int program) {};
 		unsigned char channel, startingNote, endingNote, transpose;
 };
 #endif
