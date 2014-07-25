@@ -30,7 +30,7 @@ LDFLAGS = -l=DOS -fe=../$(name).exe
 CDIR = ../src
 HDIR = ../include
 
-OBJS = main.obj MidiDev.obj MidiDisp.obj BeepInst.obj DebugIns.obj AdlibMelodicInstrument.obj OPLDriver.obj
+OBJS = main.obj MidiDev.obj MidiDisp.obj BeepInst.obj DebugIns.obj AdlibMelodicInstrument.obj OPLDriver.obj TextScreen.obj AdlibMelodicControlPanel.obj
 lnk_dependencies = makefile
 
 
@@ -60,3 +60,7 @@ CFLAGS += -xs -oal+ -fo=.obj
 clean: .SYMBOLIC
 	rm -f *.obj *.err ../$(name).exe *.lnk *.res *.rex *.lib *.sym *.map
 	rm -f *.lk1 *.mk1 *.mk
+
+run: .SYMBOLIC ../$(name).exe
+    dosbox ../bass.exe
+	

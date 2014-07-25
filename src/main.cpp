@@ -28,7 +28,8 @@
 #include "DebugIns.hpp"
 #include "OPLDriver.hpp"
 #include "AdlibMelodicInstrument.hpp"
-//include <dos.h>
+#include "TextScreen.hpp"
+#include "AdlibMelodicControlPanel.hpp"
 //volatile int clock_ticks;
 //void (__interrupt __far *prev_int_1c)();
 //define BLIP_COUNT 1 //18ticks = 1second
@@ -37,6 +38,10 @@
 	//~ ++clock_ticks;
 	//~ _chain_intr( prev_int_1c );
 //~ }
+
+
+
+
 
 int main() {
 	std::cout << "B.eeper A.dlib S.oundblaster S.ynth. (C) 2013 Kyle Delaney" << std::endl;
@@ -49,6 +54,8 @@ int main() {
 	midi.init(&mpu401);
 	std::cout << "Midi initalized." << std::endl;
 	
+    TextScreen screen;
+    
 	BeeperInstrument speaker;
 	speaker.channel = 0;
 	speaker.startingNote = 0;
@@ -58,7 +65,9 @@ int main() {
 	
     OPLDriver oplDriver;
     
-	AdlibMelodicInstrument adlib(&oplDriver, 0, 6);
+    AdlibMelodicControlPanel adlibCtl(screen.subScreen(0,3));
+    
+	AdlibMelodicInstrument adlib(&oplDriver, 0, 6, &adlibCtl);
 	adlib.channel = 1;
 	adlib.startingNote = 0;
 	adlib.endingNote = 127;
@@ -71,10 +80,20 @@ int main() {
 	debug.endingNote = 127;
 	debug.transpose = 0;
 	midi.addInstrument(&debug);
-	
+	    
+    
+    
+    screen.box(0x07, 0, 0, 80, 25);
+    
+    screen.print("B.eeper A.dlib S.oundblaster S.ynth. (C) 2014 Kyle Delaney", 0x07, 2, 1);
+    
+    screen.hbar(0x07, 0, 2, 80);
+    
+    adlibCtl.drawStatic();
+    adlib.resetParameters();
+    
 	while(true) {
 		midi.pollEvents();
-		
 		//if(clock_ticks > BLIP_COUNT) {
 			//midi.updateModulation(clock_ticks);
 			//clock_ticks -= BLIP_COUNT;

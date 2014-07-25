@@ -268,76 +268,130 @@ void AdlibMelodicInstrument::silence() {
 		_ages[i] = NULL_NOTE;
 	}
 }
+
+void AdlibMelodicInstrument::resetParameters() {
+	silence(); //to initialize the held note table
+    _freqMult[0] = _freqMult[1] = 0;
+    _attack[0] = _attack[1] = 8;
+    _decay[0] = _decay[1] = 8;
+    _sustain[0] = _sustain[1] = 8;
+    _release[0] = _release[1] = 8;
+    _sustainEnable[0] = _sustainEnable[1] = true;
+    _level[0] = _level[1] = OPLDriver::MAX_VOLUME;
+    _tremolo[0] = _tremolo[1] = false;
+    _vibrato[0] = _vibrato[1] = false;
+    _updateFM();
+    _updateEnvelope();
+    _updateFlags();
+    _updateLevel();
+    _panel->updateParameter(0, _attack[0]);
+    _panel->updateParameter(1, _decay[0]);
+    _panel->updateParameter(2, _sustain[0]);
+    _panel->updateParameter(3, _release[0]);
+    _panel->updateParameter(4, _level[0]);
+    _panel->updateParameter(5, _freqMult[0]);
+    _panel->updateParameter(6, _sustainEnable[0]);
+    _panel->updateParameter(7, _tremolo[0]);
+    _panel->updateParameter(8, _vibrato[0]);
+    _panel->updateParameter(9, _attack[1]);
+    _panel->updateParameter(10, _decay[1]);
+    _panel->updateParameter(11, _sustain[1]);
+    _panel->updateParameter(12, _release[1]);
+    _panel->updateParameter(13, _level[1]);
+    _panel->updateParameter(14, _freqMult[1]);
+    _panel->updateParameter(15, _sustainEnable[1]);
+    _panel->updateParameter(16, _tremolo[1]);
+    _panel->updateParameter(17, _vibrato[1]);
+    _panel->updateParameter(18, _fmEnable);
+    _panel->updateParameter(19, _fmFactor);
+}
+
 void AdlibMelodicInstrument::cc(unsigned char id, unsigned char value) {
     switch(id) {
         case 20:
             _attack[0] = value >> 3;
             _updateEnvelope();
+            _panel->updateParameter(0, _attack[0]);
             break;
         case 21:
             _decay[0] = value >> 3;
             _updateEnvelope();
+            _panel->updateParameter(1, _decay[0]);
             break;
         case 22:
             _sustain[0] = value >> 3;
             _updateEnvelope();
+            _panel->updateParameter(2, _sustain[0]);
             break;
         case 23:
             _release[0] = value >> 3;
             _updateEnvelope();
+            _panel->updateParameter(3, _release[0]);
             break;
-        case 30:
-            _sustainEnable[0] = (value > 64);
-            _updateFlags();
-            break;
-        
-        case 24:
-            _attack[0] = value >> 3;
-            _updateEnvelope();
-            break;
-        case 25:
-            _decay[0] = value >> 3;
-            _updateEnvelope();
-            break;
-        case 26:
-            _sustain[0] = value >> 3;
-            _updateEnvelope();
-            break;
-        case 27:
-            _release[0] = value >> 3;
-            _updateEnvelope();
-            break;
-        case 46:
-            _sustainEnable[0] = (value > 64);
-            _updateFlags();
-            break;
-        
         case 3: //op1 level
             _level[0] = value >> 1;
             _updateLevel();
+            _panel->updateParameter(4, _level[0]);
             break;
         case 9: //op1 freq
             _freqMult[0] = value >> 3;
             _updateFlags();
+            _panel->updateParameter(5, _freqMult[0]);
+            break;
+        case 30:
+            _sustainEnable[0] = (value > 64);
+            _updateFlags();
+            _panel->updateParameter(6, _sustainEnable[0]);
             break;
 
-        case 16: //op1 level
-            _level[0] = value >> 1;
+        
+        case 24:
+            _attack[1] = value >> 3;
+            _updateEnvelope();
+            _panel->updateParameter(9, _attack[1]);
+            break;
+        case 25:
+            _decay[1] = value >> 3;
+            _updateEnvelope();
+            _panel->updateParameter(10, _decay[1]);
+            break;
+        case 26:
+            _sustain[1] = value >> 3;
+            _updateEnvelope();
+            _panel->updateParameter(11, _sustain[1]);
+            break;
+        case 27:
+            _release[1] = value >> 3;
+            _updateEnvelope();
+            _panel->updateParameter(12, _release[1]);
+            break;
+        case 16: //op2 level
+            _level[1] = value >> 1;
             _updateLevel();
+            _panel->updateParameter(13, _level[1]);
             break;
         case 17: //op2 freq
             _freqMult[1] = value >> 3;
             _updateFlags();
+            _panel->updateParameter(14, _freqMult[1]);
             break;
+        case 46:
+            _sustainEnable[1] = (value > 64);
+            _updateFlags();
+            _panel->updateParameter(15, _sustainEnable[1]);
+            break;
+
         
         case 47: //FM enable
             _fmEnable = (value > 64);
             _updateFM();
+            _panel->updateParameter(18, _fmEnable);
             break;
         case 19: //FM factor
             _fmFactor = value >> 4;
             _updateFM();
-            break;   
+            _panel->updateParameter(19, _fmFactor);
+            break;  
         
         case 28:
             silence();
@@ -349,7 +403,7 @@ void AdlibMelodicInstrument::cc(unsigned char id, unsigned char value) {
 void AdlibMelodicInstrument::_updateFlags() {
     for(int c = 0; c < _channelCount; c++) {
         for(int o = 0; o < 2; o++) {
-            _driver->setFlags(_firstChannel+c, o, false, false, _sustainEnable[o], false, _freqMult[o]);
+            _driver->setFlags(_firstChannel+c, o, _tremolo[o], _vibrato[o], _sustainEnable[o], false, _freqMult[o]);
         }
 	}
 }
@@ -379,23 +433,10 @@ void AdlibMelodicInstrument::_updateLevel() {
     }
 }
 AdlibMelodicInstrument::AdlibMelodicInstrument(OPLDriver* driver, 
-    int firstChannel, int channelCount): _driver(driver), 
+    int firstChannel, int channelCount, ControlPanel* panel): _driver(driver), 
     _firstChannel(firstChannel), _channelCount(channelCount), 
-    _fmEnable(false), _fmFactor(0) {
-	silence(); //to initialize the held note table
-    _freqMult[0] = _freqMult[1] = 0;
-    _attack[0] = _attack[1] = 8;
-    _decay[0] = _decay[1] = 8;
-    _sustain[0] = _sustain[1] = 8;
-    _release[0] = _release[1] = 8;
-    _sustainEnable[0] = _sustainEnable[1] = true;
-    _level[0] = _level[1] = OPLDriver::MAX_VOLUME;
-    _updateFM();
-    _updateEnvelope();
-    _updateFlags();
-    _updateLevel();
+    _fmEnable(false), _fmFactor(0), _panel(panel) {
 }
 AdlibMelodicInstrument::~AdlibMelodicInstrument() {
     silence();
-    
 }

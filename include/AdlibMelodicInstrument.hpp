@@ -24,8 +24,8 @@
 #define ADLIB_MELODIC_INSTRUMENT_HPP
 #include "OPLDriver.hpp"
 #include "AbstInst.hpp"
+#include "ControlPanel.hpp"
 #define MAX_POLYPHONY 9
-
 
 
 struct Instrument {
@@ -43,8 +43,9 @@ class AdlibMelodicInstrument: public AbstractInstrument {
 		void pressureChangeNote(unsigned char note, unsigned char pressure);
 		void silence();
         void cc(unsigned char id, unsigned char value);
-	
-		AdlibMelodicInstrument(OPLDriver* driver, int firstChannel, int channelCount);
+        void resetParameters();
+    
+		AdlibMelodicInstrument(OPLDriver* driver, int firstChannel, int channelCount, ControlPanel* panel);
 		~AdlibMelodicInstrument();
 	private:
 		unsigned char _notes[MAX_POLYPHONY]; //list of all the currently playing notes
@@ -55,12 +56,13 @@ class AdlibMelodicInstrument: public AbstractInstrument {
         unsigned char _attack[2], _decay[2], _sustain[2], _release[2];
         unsigned char _fmFactor;
         unsigned char _freqMult[2], _level[2];
-        bool _sustainEnable[2], _fmEnable;
+        bool _fmEnable;
+        bool _sustainEnable[2], _tremolo[2], _vibrato[2];
         int _currentProgram;
         void _updateEnvelope();
         void _updateFlags();
         void _updateFM();
         void _updateLevel();
-    
+        ControlPanel* _panel;
 };
 #endif
