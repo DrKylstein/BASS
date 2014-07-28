@@ -1,6 +1,5 @@
 #include "TextScreen.hpp"
 #include <dos.h>
-#include <cstring>
 
 using std::strlen;
 
@@ -11,7 +10,6 @@ TextScreen::TextScreen() {
         int 10h
     }
     mScreen = (uint16_t far*)MK_FP(0xB800,0);
-    _fmemset(mScreen, 0, 4000);
 }
 TextScreen::TextScreen(uint16_t far* screen) {
     mScreen = screen;
@@ -67,6 +65,14 @@ void TextScreen::box(uint8_t attrib, int x, int y, int width, int height) {
         }
     }
 }
+void TextScreen::setAttrib(uint8_t attrib, int x, int y, int width, int height) {
+    for(int dx = 0; dx < width; dx++) {
+        for(int dy = 0; dy < height; dy++) {
+            mScreen[(y+dy)*80 + x + dx] |= ((uint16_t)attrib << 8);
+        }
+    }
+}
+
 void TextScreen::hbar(uint8_t attrib, int x, int y, int width) {
     int lx = 1;
     int ly = 1;
@@ -83,5 +89,13 @@ void TextScreen::hbar(uint8_t attrib, int x, int y, int width) {
         }
         mScreen[y*80 + dx] = symbol | ((uint16_t)attrib << 8);
         
+    }
+}
+
+void TextScreen::fill(char c, uint8_t attrib, int x, int y, int width, int height) {
+    for(int i = 0; i < height; i++) {
+        for(int j = 0; j < width; j++) {
+            mScreen[(y+i)*80 + x + j] = c | ((uint16_t)attrib << 8);
+        }
     }
 }

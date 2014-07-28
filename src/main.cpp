@@ -20,8 +20,9 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#include <conio>
-#include <iostream>
+//include <iostream>
+#include <cstring>
+#include <vector>
 #include "MidiDev.hpp"
 #include "MidiDisp.hpp"
 #include "BeepInst.hpp"
@@ -30,6 +31,9 @@
 #include "AdlibMelodicInstrument.hpp"
 #include "TextScreen.hpp"
 #include "AdlibMelodicControlPanel.hpp"
+#include "PCKeyboard.hpp"
+#include "BeeperControlPanel.hpp"
+#include "TextCursor.hpp"
 //volatile int clock_ticks;
 //void (__interrupt __far *prev_int_1c)();
 //define BLIP_COUNT 1 //18ticks = 1second
@@ -39,22 +43,31 @@
 	//~ _chain_intr( prev_int_1c );
 //~ }
 
-
+static const char* buttons[] = {
+    "2 Edit",
+    "3 Bind",
+    "8 Save",
+    "9 Load",
+    "10 Exit",
+    0
+};
 
 
 
 int main() {
-	std::cout << "B.eeper A.dlib S.oundblaster S.ynth. (C) 2013 Kyle Delaney" << std::endl;
+	//std::cout << "B.eeper A.dlib S.oundblaster S.ynth. (C) 2013 Kyle Delaney" << std::endl;
 	
-	//prev_int_1c = _dos_getvect( 0x1c );
-	//_dos_setvect( 0x1c, timer_rtn );
-	//std::cout << "Timer initalized." << std::endl;
 	MidiDevice mpu401;
 	MidiDispatcher midi;
 	midi.init(&mpu401);
-	std::cout << "Midi initalized." << std::endl;
+	//std::cout << "Midi initalized." << std::endl;
 	
     TextScreen screen;
+    TextCursor cursor;
+    
+    BeeperControlPanel beeperCtl(screen);
+    
+    ControlPanel* head = &beeperCtl;
     
 	BeeperInstrument speaker;
 	speaker.channel = 0;
@@ -65,7 +78,8 @@ int main() {
 	
     OPLDriver oplDriver;
     
-    AdlibMelodicControlPanel adlibCtl(screen.subScreen(0,3));
+    AdlibMelodicControlPanel adlibCtl(screen);
+    adlibCtl.insertAfter(beeperCtl);
     
 	AdlibMelodicInstrument adlib(&oplDriver, 0, 6, &adlibCtl);
 	adlib.channel = 1;
@@ -80,30 +94,73 @@ int main() {
 	debug.endingNote = 127;
 	debug.transpose = 0;
 	midi.addInstrument(&debug);
-	    
+	   
+       
+    std::vector<AbstractInstrument*> instruments;
+       
+    instruments.push_back(&speaker);
+    instruments.push_back(&adlib);
+        
+    screen.fill(' ', 0x07, 0, 0, 80, 24);
+    screen.hbar(0x07, 0, 0, 80);
+    screen.print("B.eeper A.dlib S.oundblaster S.ynth. (C) 2014 Kyle Delaney", 0x07, 1, 0);
+        
+    int x = 0;
+    for(int i = 0; buttons[i] != 0; i++) {
+        screen.print(buttons[i], 0x30, x,24);
+        x += std::strlen(buttons[i]) + 1;
+    }
     
     
-    screen.box(0x07, 0, 0, 80, 25);
+    for (ControlPanel* p = head; p != 0; p = p->getNext()) {
+        p->drawStatic();
+    }
+
+    for (std::vector<AbstractInstrument*>::iterator it = instruments.begin() ; it != instruments.end(); ++it) {
+        (*it)->resetParameters();
+    }
     
-    screen.print("B.eeper A.dlib S.oundblaster S.ynth. (C) 2014 Kyle Delaney", 0x07, 2, 1);
+    PCKeyboard pckey;
     
-    screen.hbar(0x07, 0, 2, 80);
-    
-    adlibCtl.drawStatic();
-    adlib.resetParameters();
+    int pos = 0;
+    bool moved = true;
     
 	while(true) {
+        if(pckey.wasPressed(KeySym::f10)) break;
 		midi.pollEvents();
-		//if(clock_ticks > BLIP_COUNT) {
-			//midi.updateModulation(clock_ticks);
-			//clock_ticks -= BLIP_COUNT;
-		//}
+        bool tab = pckey.wasPressed(KeySym::tab);
+		if(pckey.wasPressed(KeySym::right) || (tab && 
+        !pckey.isHeld(KeySym::left_shift) && 
+        !pckey.isHeld(KeySym::right_shift))) {
+            pos++;
+            moved = true;
+        }
+		if(pckey.wasPressed(KeySym::left) || (tab && 
+        (pckey.isHeld(KeySym::left_shift) || 
+        pckey.isHeld(KeySym::right_shift)))) {
+            pos--;
+            moved = true;
+        }
+        if(moved) {
+            moved = false;
+            int rpos = pos;
+            for (ControlPanel* p = head; p != 0; p = p->getNext()) {
+                if(rpos >= p->getParameterCount()) {
+                    rpos -= p->getParameterCount();
+                    continue;
+                }
+                cursor.moveTo(p->getPosition(rpos).first, p->getPosition(rpos).second);
+            }
+        }
+
 		
-		if(kbhit()) break;
 	}	
-	std::cout << "Exiting." << std::endl;
-	
-	//_dos_setvect( 0x1c, prev_int_1c );
-	
+	//std::cout << "Exiting." << std::endl;
+	    
+    _asm {
+        mov ax,3
+        int 10h
+    }
+
 	return 0;
 }

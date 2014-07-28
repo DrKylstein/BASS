@@ -22,7 +22,7 @@
  */
 #ifndef MIDIDISPATCHER_HPP
 #define MIDIDISPATCHER_HPP
-#define MAXINSTS 8
+#include <vector>
 class MidiDevice;
 class AbstractInstrument;
 class MidiDispatcher {
@@ -36,10 +36,13 @@ class MidiDispatcher {
 		~MidiDispatcher();
 	
 	private:
-		AbstractInstrument* _instruments[MAXINSTS];
-		int _numInstruments;
+		std::vector<AbstractInstrument*> _instruments;
 		MidiDevice* _dev;
-		int _state;
+        enum {
+            BYTE_CHANNEL,
+            BYTE_NOTE,
+            BYTE_VELOCITY
+		} _state;
 	
 		unsigned char _channel;
 		unsigned char _command;

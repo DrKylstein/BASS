@@ -1,10 +1,10 @@
-#ifndef ADLIBMELODICCONTROLPANEL_HPP
-#define ADLIBMELODICCONTROLPANEL_HPP
+#ifndef BEEPERCONTROLPANEL_HPP
+#define BEEPERCONTROLPANEL_HPP
 #include "ControlPanel.hpp"
-class AdlibMelodicControlPanel : public ControlPanel {
+class BeeperControlPanel : public ControlPanel {
     public:
-        AdlibMelodicControlPanel(TextScreen screen);
-        ~AdlibMelodicControlPanel();
+        BeeperControlPanel(TextScreen screen);
+        ~BeeperControlPanel();
         void updateParameter(int id, int value);
         void drawStatic();
         int getBottom();
@@ -14,6 +14,5 @@ class AdlibMelodicControlPanel : public ControlPanel {
     private:
         TextScreen _screen;
         int _lastPos;
-        int _values[20];
 };
 #endif

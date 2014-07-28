@@ -24,15 +24,19 @@
 #include "MidiDev.hpp"
 #include "AbstInst.hpp"
 #include <iostream>
+
+#define NOTE_ON 0x90
+#define NOTE_OFF 0x80
+#define CC_CHANGE 0xB0
+#define PITCHBEND 0xE0
+typedef std::vector<AbstractInstrument*>::iterator InstrIter;
+
 void MidiDispatcher::addInstrument(AbstractInstrument* p) {
-	if(_numInstruments < MAXINSTS) {
-		_instruments[_numInstruments] = p;
-		++_numInstruments;
-	}
+	_instruments.push_back(p);
 }
 void MidiDispatcher::updateModulation(int ticks) {
-	for(int i = 0; i < _numInstruments; ++i) {
-		_instruments[i]->update(ticks);
+	for(InstrIter it = _instruments.begin(); it != _instruments.end(); ++it) {
+		(*it)->update(ticks);
 	}
 }
 void MidiDispatcher::pollEvents() {
@@ -45,70 +49,68 @@ void MidiDispatcher::pollEvents() {
 		}
 		int i;
 		switch(_state) {
-			case 0:
+			case BYTE_CHANNEL:
 				//std::cout << int(_command) << ", " << std::endl;
 				if( (midi_byte >= 0x80) && (midi_byte < 0xF0) ) { 
 					_channel = midi_byte & 0x0F;
 					_command = midi_byte & 0xF0;
-					++_state;
+					_state = BYTE_NOTE;
 				}
 				break;
-			case 1:
+			case BYTE_NOTE:
 				_note = midi_byte;
 				//std::cout << int(_note) << ", " << std::endl;
-				++_state;
+				_state = BYTE_VELOCITY;
 				break;
-			case 2:
+			case BYTE_VELOCITY:
 				_velocity = midi_byte;
 				_offset = (int(_note) | ( int(_velocity) << 7)) - 8192;
 				//std::cout << int(_velocity) << std::endl;
 				switch(_command) {
-					case 0x80:
+					case NOTE_OFF:
 						_velocity = 0; //note-off and note-on with zero velocity are synonyms.
-					case 0x90:
-						for(i=0; i < _numInstruments; ++i) {
-							if(_instruments[i]->channel == _channel && _note >= _instruments[i]->startingNote && _note <= _instruments[i]->endingNote) {
+					case NOTE_ON:
+						for(InstrIter it = _instruments.begin(); it != _instruments.end(); ++it) {
+							if((*it)->channel == _channel && _note >= (*it)->startingNote && _note <= (*it)->endingNote) {
 								if(_velocity ==0) {
 									//std::cout << "stop note on " << i << std::endl;
-									_instruments[i]->stopNote(_note + _instruments[i]->transpose);
+									(*it)->stopNote(_note + (*it)->transpose);
 								} else {
 									//std::cout << "start note on " << i << std::endl;
-									_instruments[i]->playNote(_note + _instruments[i]->transpose, _velocity);
+									(*it)->playNote(_note + (*it)->transpose, _velocity);
 								}
 							}
 						}
 						break;
-                    case 0xB0:
-						for(i=0; i < _numInstruments; ++i) {
-							if(_instruments[i]->channel == _channel) {
-								_instruments[i]->cc(_note, _velocity); //id and position of continous controller
+                    case CC_CHANGE:
+						for(InstrIter it = _instruments.begin(); it != _instruments.end(); ++it) {
+							if((*it)->channel == _channel) {
+								(*it)->cc(_note, _velocity); //id and position of continous controller
 							}
 						}
                         break;
-					case 0xE0:
-						for(i=0; i < _numInstruments; ++i) {
-							if(_instruments[i]->channel == _channel) {
-								_instruments[i]->pitchBend(_offset);
+					case PITCHBEND:
+						for(InstrIter it = _instruments.begin(); it != _instruments.end(); ++it) {
+							if((*it)->channel == _channel) {
+								(*it)->pitchBend(_offset);
 							}
 						}
 						//break;
 				}
-				_state = 0;
+				_state = BYTE_CHANNEL;
 		}
 	}
 }
 void MidiDispatcher::init(MidiDevice* dev) {
 	_dev = dev;
-	if(_dev->isDetected()) {
+	/*if(_dev->isDetected()) {
 		std::cout << "Using MPU401." <<std::endl;
 	} else {
 		std::cout << "No Midi hardware detected!" << std::endl;
-	}
+	}*/
 }
 MidiDispatcher::MidiDispatcher() {
-	//_dev = new MidiDevice();
-	_state = 0;
-	_numInstruments = 0;
+	_state = BYTE_CHANNEL;
 }
 MidiDispatcher::~MidiDispatcher() {
 }
