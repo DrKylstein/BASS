@@ -119,6 +119,15 @@ void OPLDriver::setFreqMult(int ch, int op, int fmult) {
     _update(0x20+_opIndex(ch, op));
 }
 
+void OPLDriver::setTremoloDepth(bool high) {
+    _setBit(0xBD, 7, high);
+    _update(0xBD);
+}
+void OPLDriver::setVibratoDepth(bool high) {
+    _setBit(0xBD, 6, high);
+    _update(0xBD);
+}
+
 
 int OPLDriver::getReg(int id) {
     return _regs[id];

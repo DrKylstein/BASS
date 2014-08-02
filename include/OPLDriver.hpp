@@ -26,6 +26,10 @@ class OPLDriver {
         void keyOff(int channel);
         void setFreq(int channel, int freq);
         
+        void setTremoloDepth(bool high);
+        void setVibratoDepth(bool low);
+        
+        //for debugging only
         int getReg(int id);
         
     private:
