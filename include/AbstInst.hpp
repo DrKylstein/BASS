@@ -33,7 +33,10 @@ class AbstractInstrument {
         virtual void cc(unsigned char id, unsigned char value) {};
 		virtual void update(int ticks) {};
         virtual void programChange(int program) {};
+            
         virtual void resetParameters() {};
+        virtual void setParameter(int id) {};
+            
 		unsigned char channel, startingNote, endingNote, transpose;
 };
 #endif

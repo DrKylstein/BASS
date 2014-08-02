@@ -28,13 +28,6 @@
 #define MAX_POLYPHONY 9
 
 
-struct Instrument {
-    struct OPLREGS {
-        uint8_t ksl, multiple, feedback, attack, sustain, eg, decay, release, totalLevel, am, vib, ksr, con;
-    } oplModulator, oplCarrier;
-    uint8_t modWaveSelect, carWaveSelect;
-};
-
 class AdlibMelodicInstrument: public AbstractInstrument {
 	public:
 		void playNote(unsigned char note, unsigned char velocity);
@@ -43,7 +36,10 @@ class AdlibMelodicInstrument: public AbstractInstrument {
 		void pressureChangeNote(unsigned char note, unsigned char pressure);
 		void silence();
         void cc(unsigned char id, unsigned char value);
+        void setParameter(unsigned char id, unsigned char value);
         void resetParameters();
+    
+        static const int PARAMETER_COUNT = 20;
     
 		AdlibMelodicInstrument(OPLDriver* driver, int firstChannel, int channelCount, ControlPanel* panel);
 		~AdlibMelodicInstrument();
@@ -53,16 +49,7 @@ class AdlibMelodicInstrument: public AbstractInstrument {
 		int _notesHeld;
 		OPLDriver* _driver;
         int _firstChannel, _channelCount;
-        unsigned char _attack[2], _decay[2], _sustain[2], _release[2];
-        unsigned char _fmFactor;
-        unsigned char _freqMult[2], _level[2];
-        bool _fmEnable;
-        bool _sustainEnable[2], _tremolo[2], _vibrato[2];
         int _currentProgram;
-        void _updateEnvelope();
-        void _updateFlags();
-        void _updateFM();
-        void _updateLevel();
         ControlPanel* _panel;
 };
 #endif

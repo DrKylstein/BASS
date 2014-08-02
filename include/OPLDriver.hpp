@@ -1,8 +1,6 @@
 #ifndef OPLDRIVER_HPP
 #define OPLDRIVER_HPP
 #include <cstdint>
-using std::uint8_t;
-using std::uint16_t;
 class OPLDriver {
     public:
         static const int CHANNEL_COUNT = 9;
@@ -11,18 +9,33 @@ class OPLDriver {
         OPLDriver();
         ~OPLDriver();
         void reset();
-        void write(uint8_t reg, uint8_t value);
-        uint8_t read(uint8_t reg);
-        void silence();
-        void enableFM(int channel, uint8_t factor);
-        void disableFM(int channel);
+        
+        void setAM(int channel, bool am);
+        void setFeedback(int channel, int factor);
         void setVolume(int channel, int op, int level);
-        void setADSR(int channel, int op, int attack, int decay, int sustain, int release);
-        void setFlags(int channel, int op, bool tremolo, bool vibrato, bool sustain, bool ksr, uint8_t fmult);
-        void keyOn(int channel, uint16_t freq);
-        void keyOff(int channel, uint16_t freq);
+        void setAttack(int channel, int op, int attack);
+        void setDecay(int channel, int op, int decay);
+        void setSustain(int channel, int op, int sustain);
+        void setRelease(int channel, int op, int release);
+        void setTremolo(int channel, int op, bool tremolo);
+        void setVibrato(int channel, int op, bool vibrato);
+        void setHold(int channel, int op, bool sustain);
+        void setScaling(int channel, int op, bool ksr);
+        void setFreqMult(int channel, int op, int fmult);
+        void keyOn(int channel, int freq);
+        void keyOff(int channel);
+        void setFreq(int channel, int freq);
+        
+        int getReg(int id);
+        
     private:
-        uint16_t _ioBase;
+        void write(int reg, int value);
+        int read(int reg);
+        void _update(int reg);
+        int _opIndex(int ch, int op);
+        void _setBit(int reg, int bit, bool value);
+        std::uint16_t _ioBase;
+        std::uint8_t _regs[0xF6];
     
 };
 #endif

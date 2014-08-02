@@ -44,10 +44,7 @@
 //~ }
 
 static const char* buttons[] = {
-    "2 Edit",
-    "3 Bind",
-    "8 Save",
-    "9 Load",
+    "9 Debug",
     "10 Exit",
     0
 };
@@ -124,10 +121,38 @@ int main() {
     
     int pos = 0;
     bool moved = true;
+
+    bool oplDebug = false;
     
 	while(true) {
         if(pckey.wasPressed(KeySym::f10)) break;
 		midi.pollEvents();
+        
+        if(pckey.wasPressed(KeySym::f9)) {
+            oplDebug = !oplDebug;
+            if(oplDebug) {
+                for(int i = 0; i <= 0xF; i++) {
+                    screen.printHex(i, 0x70, 2 + i*3, 7);
+                }        
+                for(int i = 0; i <= 0xF; i++) {
+                    screen.printHex(i, 0x70, 0, 8+i);
+                }               
+            } else {
+                for (ControlPanel* p = head; p != 0; p = p->getNext()) {
+                    p->drawStatic();
+                }
+                for (std::vector<AbstractInstrument*>::iterator it = instruments.begin() ; it != instruments.end(); ++it) {
+                    (*it)->resetParameters();
+                }
+            }
+        }
+        if(oplDebug) {
+            for(int i = 0; i < 0xF6; i++) {
+                screen.print("0", 0x07, 2 + (i % 16)*3, i/16 + 8);
+                screen.printHex(oplDriver.getReg(i), 0x07, 3 + (i % 16)*3, i/16 + 8);
+            }
+        }
+        
         bool tab = pckey.wasPressed(KeySym::tab);
 		if(pckey.wasPressed(KeySym::right) || (tab && 
         !pckey.isHeld(KeySym::left_shift) && 

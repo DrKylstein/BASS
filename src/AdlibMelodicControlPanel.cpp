@@ -1,12 +1,12 @@
 #include "AdlibMelodicControlPanel.hpp"
 
 static const int _positions[20][2] = {
-    {6,2},{10,2},{14,2},{18,2},{22,2},{26,2}, {30,2},{34,2},{38,2}, {44,2},{48,2},
-    {6,3},{10,3},{14,3},{18,3},{22,3},{26,3}, {30,3},{34,3},{38,3}
+    {6,2},{10,2},{14,2},{18,2},{22,2},{26,2}, {30,2},{34,2},{38,2}, 
+    {6,3},{10,3},{14,3},{18,3},{22,3},{26,3}, {30,3},{34,3},{38,3}, {44,2},{48,2}
 };
 
-static const char* labels[11] = {
-    "Atk","Dcy","Stn","Rls","Vol","Frq","Hld","Trm","Vib","FM","Fbk"
+static const char* labels[] = {
+    "Atk","Dcy","Stn","Rls","Vol","Frq","Trm","Vib","Hld"
 };
 
 AdlibMelodicControlPanel::AdlibMelodicControlPanel(TextScreen screen) {
@@ -35,10 +35,12 @@ void AdlibMelodicControlPanel::drawStatic() {
     _screen.print("Adlib Melodic", 0x07, 1, getTop());
     _screen.print("OP1",0x07,2,getTop()+2);
     _screen.print("OP1",0x07,2,getTop()+3);
-    for(int i = 0; i < 11; i++) {
+    for(int i = 0; i < 9; i++) {
         _screen.print(labels[i],0x07,_positions[i][0],_positions[i][1]-1+getTop());
     }
-    for(int i = 0; i < 16; i++) {
+    _screen.print("AM",0x07,_positions[18][0],_positions[18][1]-1+getTop());
+    _screen.print("Fbk",0x07,_positions[19][0],_positions[19][1]-1+getTop());
+    for(int i = 0; i < 20; i++) {
         _screen.print("00",0x82,_positions[i][0],_positions[i][1]+getTop());
     }
 }

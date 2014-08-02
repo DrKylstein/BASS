@@ -33,6 +33,20 @@ void TextScreen::print(int num, uint8_t attrib, int x, int y) {
         i--;
     } while(num);
 }
+void TextScreen::printHex(int num, uint8_t attrib, int x, int y) {
+    int i = 0;
+    do {
+        char c = '0';
+        if((num & 0xF) < 0xA) {
+            c = (num & 0xF) + '0';
+        } else {
+            c = (num & 0xF) - 10 + 'A';
+        }
+        mScreen[y*80 + x + i] = c | ((uint16_t)attrib << 8);
+        num >>= 4;
+        i--;
+    } while(num);
+}
 
 static const uint8_t BOX_CHARS[3][3] = {
     {0xC9,0xCD,0xBB},

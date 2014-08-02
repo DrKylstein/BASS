@@ -111,12 +111,12 @@ static void __interrupt __far PCKeyboard::keyboard_int() {
         _codeEscaped = false;
     }
     
-    //_chain_intr(prev_int_9);
+    _chain_intr(prev_int_9);
     //reset IRQ by temporarily setting bit 7
-    int x = inp(0x61);
-    outp(0x61, (x | 0x80));
-    outp(0x61, x);
+    //int x = inp(0x61);
+    //outp(0x61, (x | 0x80));
+    //outp(0x61, x);
     
     //notify Programmable Interrupt Controller that we've finished
-    outp(0x20, 0x20);
+    //outp(0x20, 0x20);
 }

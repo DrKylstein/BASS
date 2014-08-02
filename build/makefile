@@ -64,3 +64,5 @@ clean: .SYMBOLIC
 run: .SYMBOLIC ../$(name).exe
     dosbox ../bass.exe
 	
+install: .SYMBOLIC ../$(name).exe
+    cp ../bass.exe ~/software/msdos/apps/
