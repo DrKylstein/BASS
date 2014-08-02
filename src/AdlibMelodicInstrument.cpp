@@ -279,7 +279,7 @@ void AdlibMelodicInstrument::resetParameters() {
 static const int _divisors[AdlibMelodicInstrument::PARAMETER_COUNT] = {
     3,3,3,3,1,3,6,6,6,
     3,3,3,3,1,3,6,6,6,
-    6,4, 6,6
+    6,4, 6,6, 4,4
 };
 
 void AdlibMelodicInstrument::setParameter(unsigned char id, unsigned char value) {
@@ -358,6 +358,13 @@ void AdlibMelodicInstrument::setParameter(unsigned char id, unsigned char value)
             case 19:
                 _driver->setFeedback(_firstChannel+c, value);
                 break;
+            
+            case 22:
+                _driver->setWaveform(_firstChannel+c, 0, value);
+                break;
+            case 23:
+                _driver->setWaveform(_firstChannel+c, 1, value);
+                break;
         }
     }
 }
@@ -433,6 +440,13 @@ void AdlibMelodicInstrument::cc(unsigned char id, unsigned char value) {
             break;
         case 76:
             setParameter(21, value);
+            break;
+        
+        case 14:
+            setParameter(22, value);
+            break;
+        case 18:
+            setParameter(23, value);
             break;
         default:
             break;

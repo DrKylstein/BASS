@@ -9,8 +9,15 @@ class OPLDriver {
         OPLDriver();
         ~OPLDriver();
         void reset();
-        
+    
+        void setTremoloDepth(bool high);
+        void setVibratoDepth(bool low);
+    
+        void keyOn(int channel, int freq);
+        void keyOff(int channel);
+        void setFreq(int channel, int freq);
         void setAM(int channel, bool am);
+    
         void setFeedback(int channel, int factor);
         void setVolume(int channel, int op, int level);
         void setAttack(int channel, int op, int attack);
@@ -22,12 +29,8 @@ class OPLDriver {
         void setHold(int channel, int op, bool sustain);
         void setScaling(int channel, int op, bool ksr);
         void setFreqMult(int channel, int op, int fmult);
-        void keyOn(int channel, int freq);
-        void keyOff(int channel);
-        void setFreq(int channel, int freq);
+        void setWaveform(int channel, int op, int type);
         
-        void setTremoloDepth(bool high);
-        void setVibratoDepth(bool low);
         
         //for debugging only
         int getReg(int id);

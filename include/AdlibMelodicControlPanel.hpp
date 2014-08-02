@@ -12,7 +12,7 @@ class AdlibMelodicControlPanel : public ControlPanel {
         std::pair<int, int> getPosition(int item);
         int getParameterCount();
     private:
-        static const int PARAMETER_COUNT = 22;
+        static const int PARAMETER_COUNT = 24;
         static const unsigned char _positions[AdlibMelodicControlPanel::PARAMETER_COUNT][2];
         TextScreen _screen;
         int _lastPos;

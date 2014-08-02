@@ -25,6 +25,8 @@ void OPLDriver::reset() {
         _regs[i] = 0;
 		write(i,0);
 	}
+    _regs[1] = 0x20;
+    _update(1);
 }
 int OPLDriver::read(int reg) {
 	outp(_ioBase, reg); //index write
@@ -117,6 +119,9 @@ void OPLDriver::setScaling(int ch, int op, bool ksr) {
 void OPLDriver::setFreqMult(int ch, int op, int fmult) {
     _regs[0x20+_opIndex(ch, op)] = (_regs[0x20+_opIndex(ch, op)] & 0xF0) | (fmult & 0x0F);
     _update(0x20+_opIndex(ch, op));
+}
+void OPLDriver::setWaveform(int ch, int op, int type) {
+    _regs[0xE0+_opIndex(ch, op)] = type & 0x03; //top bit only works on OPL3
 }
 
 void OPLDriver::setTremoloDepth(bool high) {

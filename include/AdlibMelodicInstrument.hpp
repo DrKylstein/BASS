@@ -39,7 +39,7 @@ class AdlibMelodicInstrument: public AbstractInstrument {
         void setParameter(unsigned char id, unsigned char value);
         void resetParameters();
     
-        static const int PARAMETER_COUNT = 22;
+        static const int PARAMETER_COUNT = 24;
     
 		AdlibMelodicInstrument(OPLDriver* driver, int firstChannel, int channelCount, ControlPanel* panel);
 		~AdlibMelodicInstrument();
