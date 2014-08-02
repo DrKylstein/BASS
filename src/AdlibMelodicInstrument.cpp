@@ -170,7 +170,7 @@ static const unsigned int volume_mapping_table[] = {
 };
 
 
-static unsigned int NoteLookup(unsigned int note, unsigned int bend)
+static unsigned int NoteLookup(unsigned int note, int bend)
 {
 	unsigned int freq_index;
 	unsigned int octave;
@@ -229,7 +229,7 @@ void AdlibMelodicInstrument::playNote(unsigned char note, unsigned char velocity
 		if(_ages[i] == 0) { //the oldest note, lets overwrite it.
 			_notes[i] = note;
 			_ages[i] = _notesHeld; //still the same number of notes held
-			_driver->keyOn(_firstChannel+i, NoteLookup(note, 0));
+			_driver->keyOn(_firstChannel+i, NoteLookup(note, _bend));
 		} else { //age all the other notes by one. (next oldest (1) becomes oldest (0), etc.)
 			--_ages[0];
 		}
@@ -256,6 +256,12 @@ void AdlibMelodicInstrument::stopNote(unsigned char note) {
 	}
 }
 void AdlibMelodicInstrument::pitchBend(signed int offset) {
+    _bend = offset / 512;
+    for(int i = 0; i < _channelCount; ++i) {
+        if(_notes[i] != NULL_NOTE) {
+            _driver->setFrequency(_firstChannel+i, NoteLookup(_notes[i], _bend));
+        }
+    }
 }
 void AdlibMelodicInstrument::pressureChangeNote(unsigned char note, unsigned char pressure) {
 }
@@ -454,7 +460,7 @@ void AdlibMelodicInstrument::cc(unsigned char id, unsigned char value) {
 }
 AdlibMelodicInstrument::AdlibMelodicInstrument(OPLDriver* driver, 
     int firstChannel, int channelCount, ControlPanel* panel): _driver(driver), 
-    _firstChannel(firstChannel), _channelCount(channelCount), _panel(panel) {
+    _firstChannel(firstChannel), _channelCount(channelCount), _panel(panel), _bend(0) {
 }
 AdlibMelodicInstrument::~AdlibMelodicInstrument() {
     silence();

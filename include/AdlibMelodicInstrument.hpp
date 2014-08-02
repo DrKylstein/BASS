@@ -47,6 +47,7 @@ class AdlibMelodicInstrument: public AbstractInstrument {
 		unsigned char _notes[MAX_POLYPHONY]; //list of all the currently playing notes
 		unsigned char _ages[MAX_POLYPHONY]; //age of corresponding notes, 0 is the oldest.
 		int _notesHeld;
+        int _bend;
 		OPLDriver* _driver;
         int _firstChannel, _channelCount;
         int _currentProgram;

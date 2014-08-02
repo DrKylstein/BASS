@@ -15,7 +15,7 @@ class OPLDriver {
     
         void keyOn(int channel, int freq);
         void keyOff(int channel);
-        void setFreq(int channel, int freq);
+        void setFrequency(int channel, int freq);
         void setAM(int channel, bool am);
     
         void setFeedback(int channel, int factor);

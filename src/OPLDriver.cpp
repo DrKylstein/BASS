@@ -91,7 +91,13 @@ void OPLDriver::setRelease(int ch, int op, int release) {
 
 void OPLDriver::keyOn(int ch, int freq) {
     _regs[0xA0+ch] = freq & 0xFF;
-    _regs[0xB0+ch] = (freq >> 8) | 0x20;
+    _regs[0xB0+ch] = ((freq >> 8) & 0x1F) | 0x20;
+    _update(0xA0+ch);
+    _update(0xB0+ch);
+}
+void OPLDriver::setFrequency(int ch, int freq) {
+    _regs[0xA0+ch] = freq & 0xFF;
+    _regs[0xB0+ch] = _regs[0xB0+ch] & 0x20 | ((freq >> 8) & 0x1F);
     _update(0xA0+ch);
     _update(0xB0+ch);
 }
