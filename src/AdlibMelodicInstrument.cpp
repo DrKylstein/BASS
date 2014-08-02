@@ -276,16 +276,24 @@ void AdlibMelodicInstrument::resetParameters() {
         setParameter(i, 0);
     }
 }
-static const int _divisors[] = {
+static const int _divisors[AdlibMelodicInstrument::PARAMETER_COUNT] = {
     3,3,3,3,1,3,6,6,6,
     3,3,3,3,1,3,6,6,6,
-    6,4
+    6,4, 6,6
 };
 
 void AdlibMelodicInstrument::setParameter(unsigned char id, unsigned char value) {
-    if(id > PARAMETER_COUNT) return;
+    if(id >= PARAMETER_COUNT) return;
     value >>= _divisors[id];
     _panel->updateParameter(id, value);
+    switch(id) {
+        case 20:
+            _driver->setTremoloDepth(value);
+            return;
+        case 21:
+            _driver->setVibratoDepth(value);
+            return;
+    }
     for(int c = 0; c < _channelCount; c++) {
         switch(id) {
             case 0:
@@ -419,6 +427,12 @@ void AdlibMelodicInstrument::cc(unsigned char id, unsigned char value) {
             break;
         case 19:
             setParameter(19, value);
+            break;
+        case 75:
+            setParameter(20, value);
+            break;
+        case 76:
+            setParameter(21, value);
             break;
         default:
             break;

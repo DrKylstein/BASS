@@ -25,6 +25,7 @@ AdlibMelodicControlPanel::~AdlibMelodicControlPanel() {
 }
 
 void AdlibMelodicControlPanel::updateParameter(int id, int value) {
+    if(id >= 20) return;
     _values[id] = value;
     _screen.print("00",0x82,_positions[id][0],_positions[id][1]+getTop());
     _screen.print(value,0x82,_positions[id][0]+1,_positions[id][1]+getTop());
