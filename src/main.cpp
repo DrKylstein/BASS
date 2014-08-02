@@ -90,7 +90,7 @@ int main() {
 	debug.startingNote = 0;
 	debug.endingNote = 127;
 	debug.transpose = 0;
-	midi.addInstrument(&debug);
+	//midi.addInstrument(&debug);
 	   
        
     std::vector<AbstractInstrument*> instruments;
