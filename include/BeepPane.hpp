@@ -26,16 +26,17 @@
 #include "Pane.hpp"
 class BeepPane : public Pane {
     public:
-        BeepPane(TextMode screen);
+        BeepPane(TextMode* screen);
         ~BeepPane();
         void updateParameter(int id, int value);
         void drawStatic();
+        void redrawParameters();
         int getBottom();
     
         std::pair<int, int> getPosition(int item);
         int getParameterCount();
     private:
-        TextMode _screen;
+        TextMode* _screen;
         int _lastPos;
 };
 #endif

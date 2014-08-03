@@ -8,6 +8,7 @@ using std::uint8_t;
 class TextMode {
     public:
         TextMode();
+        ~TextMode();
         void fill(char c, uint8_t attrib, int x, int y, int width, int height);
         void print(std::string str, uint8_t attrib, int x, int y);
         void print(int num, uint8_t attrib, int x, int y);
@@ -16,6 +17,8 @@ class TextMode {
         void hbar(uint8_t attrib, int x, int y, int width);
         void setAttrib(uint8_t attrib, int x, int y, int width, int height);
     private:
+        TextMode(TextMode&);
         uint16_t far* mScreen;
+        static bool _exists;
 };
 #endif

@@ -36,7 +36,7 @@ class FMVox: public Vox {
 		void pressureChangeNote(unsigned char note, unsigned char pressure);
 		void silence();
         void cc(unsigned char id, unsigned char value);
-        void setParameter(unsigned char id, unsigned char value);
+        void setParameter(int id, unsigned char value);
         void resetParameters();
     
         static const int PARAMETER_COUNT = 24;

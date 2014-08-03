@@ -51,7 +51,7 @@ int main() {
     TextMode screen;
     Cursor cursor;
     
-    BeepPane beeperCtl(screen);
+    BeepPane beeperCtl(&screen);
     
     Pane* head = &beeperCtl;
     
@@ -64,7 +64,7 @@ int main() {
 	
     FMDriver oplDriver;
     
-    FMPane adlibCtl(screen);
+    FMPane adlibCtl(&screen);
     adlibCtl.insertAfter(beeperCtl);
     
 	FMVox adlib(&oplDriver, 0, 6, &adlibCtl);
@@ -100,10 +100,7 @@ int main() {
     
     for (Pane* p = head; p != 0; p = p->getNext()) {
         p->drawStatic();
-    }
-
-    for (std::vector<Vox*>::iterator it = instruments.begin() ; it != instruments.end(); ++it) {
-        (*it)->resetParameters();
+        p->redrawParameters();
     }
     
     PCKeys pckey;
@@ -122,16 +119,15 @@ int main() {
             if(oplDebug) {
                 for(int i = 0; i <= 0xF; i++) {
                     screen.printHex(i, 0x70, 2 + i*3, 7);
-                }        
+                }
                 for(int i = 0; i <= 0xF; i++) {
                     screen.printHex(i, 0x70, 0, 8+i);
-                }               
+                }
             } else {
+                screen.fill(' ',0x07,0,0,80,24);
                 for (Pane* p = head; p != 0; p = p->getNext()) {
                     p->drawStatic();
-                }
-                for (std::vector<Vox*>::iterator it = instruments.begin() ; it != instruments.end(); ++it) {
-                    (*it)->resetParameters();
+                    p->redrawParameters();
                 }
             }
         }
@@ -166,14 +162,6 @@ int main() {
                 cursor.moveTo(p->getPosition(rpos).first, p->getPosition(rpos).second);
             }
         }
-
-		
 	}	
-	    
-    _asm {
-        mov ax,3
-        int 10h
-    }
-
 	return 0;
 }

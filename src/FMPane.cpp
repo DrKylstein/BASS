@@ -33,10 +33,13 @@ static const char* labels[] = {
     "AM","Fbk","TD","VD"
 };
 
-FMPane::FMPane(TextMode screen) {
+FMPane::FMPane(TextMode* screen) {
     _clearLinks();
     _screen = screen;
     _lastPos = -1;
+    for(int i = 0; i < PARAMETER_COUNT; i++) {
+        _values[i] = 0;
+    }
 }
 
 std::pair<int, int> FMPane::getPosition(int item) {
@@ -51,22 +54,30 @@ FMPane::~FMPane() {
 void FMPane::updateParameter(int id, int value) {
     if(id >= PARAMETER_COUNT) return;
     _values[id] = value;
-    _screen.print("00",0x82,_positions[id][0],_positions[id][1]+getTop());
-    _screen.print(value,0x82,_positions[id][0]+1,_positions[id][1]+getTop());
+    _screen->print("00",0x82,_positions[id][0],_positions[id][1]+getTop());
+    _screen->print(value,0x82,_positions[id][0]+1,_positions[id][1]+getTop());
 }
 
 void FMPane::drawStatic() {
-    _screen.box(0x07, 0, getTop(), 80, 5);
-    _screen.print("Adlib Melodic", 0x07, 1, getTop());
-    _screen.print("OP1",0x07,2,getTop()+2);
-    _screen.print("OP1",0x07,2,getTop()+3);
+    _screen->box(0x07, 0, getTop(), 80, 5);
+    _screen->print("Adlib Melodic", 0x07, 1, getTop());
+    _screen->print("OP1",0x07,2,getTop()+2);
+    _screen->print("OP1",0x07,2,getTop()+3);
     for(int i = 0; i < 14; i++) {
-        _screen.print(labels[i], 0x07, 6 + i*4, 1 + getTop());
+        _screen->print(labels[i], 0x07, 6 + i*4, 1 + getTop());
     }
     for(int i = 0; i < PARAMETER_COUNT; i++) {
-        _screen.print("00",0x82,_positions[i][0],_positions[i][1]+getTop());
+        _screen->print("00",0x82,_positions[i][0],_positions[i][1]+getTop());
     }
 }
+
+void FMPane::redrawParameters() {
+    for(int id = 0; id < PARAMETER_COUNT; id++) {
+        _screen->print("00",0x82,_positions[id][0],_positions[id][1]+getTop());
+        _screen->print(_values[id],0x82,_positions[id][0]+1,_positions[id][1]+getTop());
+    }
+}
+
 
 int FMPane::getParameterCount() {
     return PARAMETER_COUNT;

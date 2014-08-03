@@ -25,10 +25,11 @@
 #include "Pane.hpp"
 class FMPane : public Pane {
     public:
-        FMPane(TextMode screen);
+        FMPane(TextMode* screen);
         ~FMPane();
         void updateParameter(int id, int value);
         void drawStatic();
+        void redrawParameters();
         int getBottom();
     
         std::pair<int, int> getPosition(int item);
@@ -36,7 +37,7 @@ class FMPane : public Pane {
     private:
         static const int PARAMETER_COUNT = 24;
         static const unsigned char _positions[FMPane::PARAMETER_COUNT][2];
-        TextMode _screen;
+        TextMode* _screen;
         int _lastPos;
         int _values[PARAMETER_COUNT];
 };

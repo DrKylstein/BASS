@@ -22,16 +22,31 @@
  */
 #include "TextMode.hpp"
 #include <dos.h>
+#include <cassert>
 
 using std::strlen;
 
+bool TextMode::_exists = false;
+
 TextMode::TextMode() {
-    _asm {
-        mov bl, 0
-        mov ax, 1003h
-        int 10h
-    }
+    assert(!_exists);
+    _exists = true;
+    //turn off blinking
+    REGS inputRegisters, resultRegisters;
+    inputRegisters.x.ax = 0x1003;
+    inputRegisters.h.bl = 0;
+    int86(0x10, &inputRegisters, &resultRegisters);
+
     mScreen = (uint16_t far*)MK_FP(0xB800,0);
+}
+TextMode::TextMode(TextMode&) {
+    assert(true);
+}
+TextMode::~TextMode() {
+    //reset video mode
+    REGS inputRegisters, resultRegisters;
+    inputRegisters.x.ax = 0x0003;
+    int86(0x10, &inputRegisters, &resultRegisters);
 }
 
 void TextMode::print(std::string str, uint8_t attrib, int x, int y) {

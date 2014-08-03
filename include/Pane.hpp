@@ -28,6 +28,7 @@ class Pane {
     public:
         virtual void updateParameter(int id, int value) = 0;
         virtual void drawStatic() = 0;
+        virtual void redrawParameters() = 0;
         virtual int getBottom() = 0;
         int getTop();
     

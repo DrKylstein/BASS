@@ -288,7 +288,7 @@ static const int _divisors[FMVox::PARAMETER_COUNT] = {
     6,4, 6,6, 4,4
 };
 
-void FMVox::setParameter(unsigned char id, unsigned char value) {
+void FMVox::setParameter(int id, unsigned char value) {
     if(id >= PARAMETER_COUNT) return;
     value >>= _divisors[id];
     _panel->updateParameter(id, value);

@@ -1,6 +1,6 @@
 #include "BeepPane.hpp"
 
-BeepPane::BeepPane(TextMode screen) {
+BeepPane::BeepPane(TextMode* screen) {
     _screen = screen;
     _lastPos = -1;
     _clearLinks();
@@ -14,8 +14,12 @@ void BeepPane::updateParameter(int id, int value) {
 }
 
 void BeepPane::drawStatic() {
-    _screen.box(0x07, 0, getTop(), 80, 3);
-    _screen.print("Beeper", 0x07, getTop()+1,0);
+    _screen->box(0x07, 0, getTop(), 80, 3);
+    _screen->print("Beeper", 0x07, getTop()+1,0);
+}
+
+void BeepPane::redrawParameters() {
+    
 }
 
 int BeepPane::getParameterCount() {
