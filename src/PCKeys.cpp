@@ -1,6 +1,28 @@
+/*
+ *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
+ *  Soundblaster with MPU-401 UART compatible interfaces.
+ *  Copyright (C) 2014  Kyle Delaney
+ *
+ *  This file is a part of BASS.
+ *
+ *  BASS is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  BASS is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  You may contact the author at <dr.kylstein@gmail.com>
+ */
 #include <dos.h>
 #include <conio.h>
-#include "PCKeyboard.hpp"
+#include "PCKeys.hpp"
 
 #define KB_STATUS 0x64
 #define KB_COMMAND 0x64
@@ -16,35 +38,35 @@
 #define SCANCODE_MASK 0x7F
 #define ESCAPE_CODE   0xE0
 
-static volatile bool PCKeyboard::_state[NUM_STATES];
-static volatile bool PCKeyboard::_pressed[NUM_STATES];
-static volatile bool PCKeyboard::_anyKey = false;
-static volatile bool PCKeyboard::_codeEscaped = false;
-static interrupt_ptr PCKeyboard::prev_int_9 = 0;
+static volatile bool PCKeys::_state[NUM_STATES];
+static volatile bool PCKeys::_pressed[NUM_STATES];
+static volatile bool PCKeys::_anyKey = false;
+static volatile bool PCKeys::_codeEscaped = false;
+static interrupt_ptr PCKeys::prev_int_9 = 0;
 
-PCKeyboard::PCKeyboard() {
+PCKeys::PCKeys() {
     prev_int_9 = _dos_getvect(9);
     _dos_setvect(9, keyboard_int);
 }
-PCKeyboard::~PCKeyboard() {
+PCKeys::~PCKeys() {
     _dos_setvect(9, prev_int_9);
 }
 
-bool PCKeyboard::isHeld(KeySym::type k) {
+bool PCKeys::isHeld(KeySym::type k) {
     return _state[k];
 }
-bool PCKeyboard::wasPressed(KeySym::type k) {
+bool PCKeys::wasPressed(KeySym::type k) {
     bool val = _pressed[k];
     _pressed[k] = false;
     return val;
 }
-bool PCKeyboard::anyKey() {
+bool PCKeys::anyKey() {
     bool val = _anyKey;
     _anyKey = false;
     return val;
 }
 
-static void __interrupt __far PCKeyboard::keyboard_int() {
+static void __interrupt __far PCKeys::keyboard_int() {
     while(inp(KB_STATUS) & KBSTATUS_INPUT_FULL) {
         outp(KB_COMMAND, KBCOMMAND_READ_SCANCODE);
         int data = inp(KB_DATA);

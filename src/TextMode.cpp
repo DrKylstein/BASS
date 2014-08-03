@@ -1,9 +1,31 @@
-#include "TextScreen.hpp"
+/*
+ *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
+ *  Soundblaster with MPU-401 UART compatible interfaces.
+ *  Copyright (C) 2014  Kyle Delaney
+ *
+ *  This file is a part of BASS.
+ *
+ *  BASS is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  BASS is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  You may contact the author at <dr.kylstein@gmail.com>
+ */
+#include "TextMode.hpp"
 #include <dos.h>
 
 using std::strlen;
 
-TextScreen::TextScreen() {
+TextMode::TextMode() {
     _asm {
         mov bl, 0
         mov ax, 1003h
@@ -11,21 +33,14 @@ TextScreen::TextScreen() {
     }
     mScreen = (uint16_t far*)MK_FP(0xB800,0);
 }
-TextScreen::TextScreen(uint16_t far* screen) {
-    mScreen = screen;
-}
 
-TextScreen TextScreen::subScreen(int x, int y) {
-    return TextScreen(mScreen+x+y*80);
-}
-
-void TextScreen::print(std::string str, uint8_t attrib, int x, int y) {
+void TextMode::print(std::string str, uint8_t attrib, int x, int y) {
     int i = 0;
     for (std::string::iterator it=str.begin(); it!=str.end(); ++it) {
         mScreen[y*80 + x + i++] = (*it) | ((uint16_t)attrib << 8);
     }
 }
-void TextScreen::print(int num, uint8_t attrib, int x, int y) {
+void TextMode::print(int num, uint8_t attrib, int x, int y) {
     int i = 0;
     do {
         mScreen[y*80 + x + i] = ((num % 10) + '0') | ((uint16_t)attrib << 8);
@@ -33,7 +48,7 @@ void TextScreen::print(int num, uint8_t attrib, int x, int y) {
         i--;
     } while(num);
 }
-void TextScreen::printHex(int num, uint8_t attrib, int x, int y) {
+void TextMode::printHex(int num, uint8_t attrib, int x, int y) {
     int i = 0;
     do {
         char c = '0';
@@ -54,7 +69,7 @@ static const uint8_t BOX_CHARS[3][3] = {
     {0xC8,0xCD,0xBC}
 };
 
-void TextScreen::box(uint8_t attrib, int x, int y, int width, int height) {
+void TextMode::box(uint8_t attrib, int x, int y, int width, int height) {
     int lx = 1;
     int ly = 1;
     for(int dx = x; dx < x+width; dx++) {
@@ -79,7 +94,7 @@ void TextScreen::box(uint8_t attrib, int x, int y, int width, int height) {
         }
     }
 }
-void TextScreen::setAttrib(uint8_t attrib, int x, int y, int width, int height) {
+void TextMode::setAttrib(uint8_t attrib, int x, int y, int width, int height) {
     for(int dx = 0; dx < width; dx++) {
         for(int dy = 0; dy < height; dy++) {
             mScreen[(y+dy)*80 + x + dx] |= ((uint16_t)attrib << 8);
@@ -87,7 +102,7 @@ void TextScreen::setAttrib(uint8_t attrib, int x, int y, int width, int height) 
     }
 }
 
-void TextScreen::hbar(uint8_t attrib, int x, int y, int width) {
+void TextMode::hbar(uint8_t attrib, int x, int y, int width) {
     int lx = 1;
     int ly = 1;
     for(int dx = x; dx < x+width; dx++) {
@@ -106,7 +121,7 @@ void TextScreen::hbar(uint8_t attrib, int x, int y, int width) {
     }
 }
 
-void TextScreen::fill(char c, uint8_t attrib, int x, int y, int width, int height) {
+void TextMode::fill(char c, uint8_t attrib, int x, int y, int width, int height) {
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
             mScreen[(y+i)*80 + x + j] = c | ((uint16_t)attrib << 8);

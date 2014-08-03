@@ -20,47 +20,31 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#ifndef SPEAKER_HPP
-#define SPEAKER_HPP
-#include <conio>
-#define PIT_COUNTER_TWO	0x42
-#define PIT_MODE			0x43
-#define PPI_CONTROL		0x61
+#include "Pane.hpp"
+int Pane::getTop() {
+    if(getPrevious())
+        return getPrevious()->getBottom();
+    return 0;
+}
 
-class Speaker {	
-	public:
-		inline void setFrequency(unsigned long int freq) {
-			setTimer( 1193180 / freq );
-		}
-		inline void setTimer(unsigned short int t) {
-			bool noteState = _noteOn;
-			disconnect();
-			outp(PIT_MODE, 0xB6);
-			outp(PIT_COUNTER_TWO, t & 0xFF);
-			outp(PIT_COUNTER_TWO, (t & 0xFF00) >> 8);
-			if(noteState) {connect();}
-		}
-		inline void disconnect() {
-			if(_noteOn) {
-				outp(PPI_CONTROL, inp(PPI_CONTROL) & 0xFC);
-				_noteOn = false;
-			}
-		}
-		inline void connect() {
-			if(!_noteOn) {
-				outp(PPI_CONTROL, inp(PPI_CONTROL) | 0x03);
-				_noteOn = true;
-			}
-		}
-		inline bool isConnected() {return _noteOn;}
-		inline Speaker() {
-			_noteOn = false;
-		}
-		inline ~Speaker() {
-			disconnect();
-		}
-		
-	private:
-		bool _noteOn;
-};
-#endif
+void Pane::insertAfter(Pane& p) {
+    _next = p._next;
+    _previous = &p;
+    p._next = this;
+}
+void Pane::dettach() {
+    _next->_previous = _previous;
+    _previous->_next = _next;
+    _next = 0;
+    _previous = 0;
+}
+Pane* Pane::getNext() {
+    return _next;
+}
+Pane* Pane::getPrevious() {
+    return _previous;
+}
+
+void Pane::_clearLinks() {
+    _next = _previous = 0;
+}

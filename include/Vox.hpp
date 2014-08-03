@@ -1,7 +1,7 @@
 /*
  *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
  *  Soundblaster with MPU-401 UART compatible interfaces.
- *  Copyright (C) 2011  Kyle Delaney
+ *  Copyright (C) 2014  Kyle Delaney
  *
  *  This file is a part of BASS.
  *
@@ -20,34 +20,23 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#ifndef MIDIDISPATCHER_HPP
-#define MIDIDISPATCHER_HPP
-#include <vector>
-class MidiDevice;
-class AbstractInstrument;
-class MidiDispatcher {
+#ifndef VOX_HPP
+#define VOX_HPP
+class Vox {
 	public:
-		void init(MidiDevice* dev);
-		void addInstrument(AbstractInstrument*);
-		void pollEvents();
-		void updateModulation(int ticks);
-	
-		MidiDispatcher();
-		~MidiDispatcher();
-	
-	private:
-		std::vector<AbstractInstrument*> _instruments;
-		MidiDevice* _dev;
-        enum {
-            BYTE_CHANNEL,
-            BYTE_NOTE,
-            BYTE_VELOCITY
-		} _state;
-	
-		unsigned char _channel;
-		unsigned char _command;
-		unsigned char _note;
-		unsigned char _velocity;
-		signed int _offset;
+		virtual void playNote(unsigned char note, unsigned char velocity) = 0;
+		virtual void stopNote(unsigned char note) = 0;
+		virtual void silence() = 0;
+    
+		virtual void pitchBend(signed int offset) {};
+		virtual void pressureChangeNote(unsigned char note, unsigned char pressure) {};
+        virtual void cc(unsigned char id, unsigned char value) {};
+		virtual void update(int ticks) {};
+        virtual void programChange(int program) {};
+            
+        virtual void resetParameters() {};
+        virtual void setParameter(int id) {};
+            
+		unsigned char channel, startingNote, endingNote, transpose;
 };
 #endif

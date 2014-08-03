@@ -1,7 +1,7 @@
 /*
  *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
  *  Soundblaster with MPU-401 UART compatible interfaces.
- *  Copyright (C) 2011  Kyle Delaney
+ *  Copyright (C) 2014  Kyle Delaney
  *
  *  This file is a part of BASS.
  *  Parts of this file are from the Chocolate Doom project, Copyright (C):
@@ -24,7 +24,7 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#include "AdlibMelodicInstrument.hpp"
+#include "FMVox.hpp"
 #include <conio.h>
 #include <iostream>
 #include <fstream>
@@ -214,7 +214,7 @@ static unsigned int NoteLookup(unsigned int note, int bend)
 	return frequency_curve[sub_index + 284] | (octave << 10);
 }
 
-void AdlibMelodicInstrument::playNote(unsigned char note, unsigned char velocity) {
+void FMVox::playNote(unsigned char note, unsigned char velocity) {
 	for(int i = 0; i < _channelCount; ++i) {
 		if(_notes[i] == NULL_NOTE) { //an empty channel! lets use that.
 			_notes[i] = note;
@@ -235,7 +235,7 @@ void AdlibMelodicInstrument::playNote(unsigned char note, unsigned char velocity
 		}
 	}
 }
-void AdlibMelodicInstrument::stopNote(unsigned char note) {
+void FMVox::stopNote(unsigned char note) {
 	unsigned char removedAge = NULL_NOTE;
 	for(int i = 0; i < _channelCount; ++i) {
 		if(_notes[i] == note) {
@@ -255,7 +255,7 @@ void AdlibMelodicInstrument::stopNote(unsigned char note) {
 		}
 	}
 }
-void AdlibMelodicInstrument::pitchBend(signed int offset) {
+void FMVox::pitchBend(signed int offset) {
     _bend = offset / 512;
     for(int i = 0; i < _channelCount; ++i) {
         if(_notes[i] != NULL_NOTE) {
@@ -263,9 +263,9 @@ void AdlibMelodicInstrument::pitchBend(signed int offset) {
         }
     }
 }
-void AdlibMelodicInstrument::pressureChangeNote(unsigned char note, unsigned char pressure) {
+void FMVox::pressureChangeNote(unsigned char note, unsigned char pressure) {
 }
-void AdlibMelodicInstrument::silence() {
+void FMVox::silence() {
 	_notesHeld = 0;
 	for(int i = 0; i < _channelCount; ++i) {
 		if(_notes[i] != NULL_NOTE) {
@@ -276,19 +276,19 @@ void AdlibMelodicInstrument::silence() {
 	}
 }
 
-void AdlibMelodicInstrument::resetParameters() {
+void FMVox::resetParameters() {
 	silence(); //to initialize the held note table
     for(int i = 0; i < PARAMETER_COUNT; i++) {
         setParameter(i, 0);
     }
 }
-static const int _divisors[AdlibMelodicInstrument::PARAMETER_COUNT] = {
+static const int _divisors[FMVox::PARAMETER_COUNT] = {
     3,3,3,3,1,3,6,6,6,
     3,3,3,3,1,3,6,6,6,
     6,4, 6,6, 4,4
 };
 
-void AdlibMelodicInstrument::setParameter(unsigned char id, unsigned char value) {
+void FMVox::setParameter(unsigned char id, unsigned char value) {
     if(id >= PARAMETER_COUNT) return;
     value >>= _divisors[id];
     _panel->updateParameter(id, value);
@@ -375,7 +375,7 @@ void AdlibMelodicInstrument::setParameter(unsigned char id, unsigned char value)
     }
 }
 
-void AdlibMelodicInstrument::cc(unsigned char id, unsigned char value) {
+void FMVox::cc(unsigned char id, unsigned char value) {
     switch(id) {
         case 20:
             setParameter(0, value);
@@ -458,10 +458,10 @@ void AdlibMelodicInstrument::cc(unsigned char id, unsigned char value) {
             break;
     }
 }
-AdlibMelodicInstrument::AdlibMelodicInstrument(OPLDriver* driver, 
-    int firstChannel, int channelCount, ControlPanel* panel): _driver(driver), 
+FMVox::FMVox(FMDriver* driver, 
+    int firstChannel, int channelCount, Pane* panel): _driver(driver), 
     _firstChannel(firstChannel), _channelCount(channelCount), _panel(panel), _bend(0) {
 }
-AdlibMelodicInstrument::~AdlibMelodicInstrument() {
+FMVox::~FMVox() {
     silence();
 }

@@ -1,7 +1,7 @@
 /*
  *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
  *  Soundblaster with MPU-401 UART compatible interfaces.
- *  Copyright (C) 2011  Kyle Delaney
+ *  Copyright (C) 2014  Kyle Delaney
  *
  *  This file is a part of BASS.
  *
@@ -20,15 +20,15 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#ifndef ADLIB_MELODIC_INSTRUMENT_HPP
-#define ADLIB_MELODIC_INSTRUMENT_HPP
-#include "OPLDriver.hpp"
-#include "AbstInst.hpp"
-#include "ControlPanel.hpp"
+#ifndef FMVOX_HPP
+#define FMVOX_HPP
+#include "FMDriver.hpp"
+#include "Vox.hpp"
+#include "Pane.hpp"
 #define MAX_POLYPHONY 9
 
 
-class AdlibMelodicInstrument: public AbstractInstrument {
+class FMVox: public Vox {
 	public:
 		void playNote(unsigned char note, unsigned char velocity);
 		void stopNote(unsigned char note);
@@ -41,16 +41,16 @@ class AdlibMelodicInstrument: public AbstractInstrument {
     
         static const int PARAMETER_COUNT = 24;
     
-		AdlibMelodicInstrument(OPLDriver* driver, int firstChannel, int channelCount, ControlPanel* panel);
-		~AdlibMelodicInstrument();
+		FMVox(FMDriver* driver, int firstChannel, int channelCount, Pane* panel);
+		~FMVox();
 	private:
 		unsigned char _notes[MAX_POLYPHONY]; //list of all the currently playing notes
 		unsigned char _ages[MAX_POLYPHONY]; //age of corresponding notes, 0 is the oldest.
 		int _notesHeld;
         int _bend;
-		OPLDriver* _driver;
+		FMDriver* _driver;
         int _firstChannel, _channelCount;
         int _currentProgram;
-        ControlPanel* _panel;
+        Pane* _panel;
 };
 #endif

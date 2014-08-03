@@ -20,9 +20,9 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#include "BeepInst.hpp"
+#include "BeepVox.hpp"
 #include "Speaker.hpp"
-const unsigned short int BeeperInstrument::_timingTable[2048] = {
+const unsigned short int BeepVox::_timingTable[2048] = {
 	14868, 14342, 13818, 13296, 12776, 12257, 11741, 11226, 10713, 10202, 9693, 9186, 8681, 8177, 7675, 7175, 6677, 6181
 , 5686, 5193, 4702, 4213, 3725, 3240, 2756, 2273, 1793, 1314, 837, 361, 65424, 64952, 64482, 64013, 63546, 63081, 62618, 
 62156, 61696, 61237, 60780, 60325, 59872, 59420, 58969, 58521, 58074, 57628, 57184, 56742, 56301, 55862, 55425, 54989, 54555
@@ -124,33 +124,33 @@ const unsigned short int BeeperInstrument::_timingTable[2048] = {
 108, 108, 107, 107, 107, 106, 106, 106, 105, 105, 104, 104, 104, 103, 103, 102, 102, 102, 101, 101, 101, 100, 100, 100, 99, 
 99, 98, 98, 98, 97, 97, 97, 96, 96, 96, 95, 95, 95, 94, 94, 94, 93, 93, 93, 92, 92, 92, 91, 91, 91, 90, 90, 90
 };
-void BeeperInstrument::playNote(unsigned char note, unsigned char velocity) {
+void BeepVox::playNote(unsigned char note, unsigned char velocity) {
 	_currentNote = note;
 	_speaker.setTimer(_timingTable[( (_currentNote + 12) << 4) + (_currentBend >> 8)]);
 	_speaker.connect();
 }
-void BeeperInstrument::stopNote(unsigned char note) {
+void BeepVox::stopNote(unsigned char note) {
 	if(note == _currentNote) {
 		_speaker.disconnect();
 	}
 }
-void BeeperInstrument::pitchBend(signed int offset) {
+void BeepVox::pitchBend(signed int offset) {
 	_currentBend = offset;
 	_speaker.setTimer(_timingTable[( (_currentNote + 12) << 4) + (_currentBend >> 8)]);
 }
-void BeeperInstrument::pressureChangeNote(unsigned char note, unsigned char pressure) {
+void BeepVox::pressureChangeNote(unsigned char note, unsigned char pressure) {
 	return;
 }
-void BeeperInstrument::silence() {
+void BeepVox::silence() {
 	_speaker.disconnect();
 }
-void BeeperInstrument::update(int ticks) {
+void BeepVox::update(int ticks) {
 	_tremoloStep = _tremoloStep + ticks & 3;
 	_speaker.setTimer(_timingTable[( (_currentNote + 12) << 4) + (_currentBend >> 8) + _tremoloStep - 1]);
 }
 
-BeeperInstrument::BeeperInstrument() {
+BeepVox::BeepVox() {
 	_currentNote = _currentBend = _tremoloStep = 0;
 }
-BeeperInstrument::~BeeperInstrument() {
+BeepVox::~BeepVox() {
 }

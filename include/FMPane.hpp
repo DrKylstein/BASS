@@ -20,47 +20,24 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#ifndef SPEAKER_HPP
-#define SPEAKER_HPP
-#include <conio>
-#define PIT_COUNTER_TWO	0x42
-#define PIT_MODE			0x43
-#define PPI_CONTROL		0x61
-
-class Speaker {	
-	public:
-		inline void setFrequency(unsigned long int freq) {
-			setTimer( 1193180 / freq );
-		}
-		inline void setTimer(unsigned short int t) {
-			bool noteState = _noteOn;
-			disconnect();
-			outp(PIT_MODE, 0xB6);
-			outp(PIT_COUNTER_TWO, t & 0xFF);
-			outp(PIT_COUNTER_TWO, (t & 0xFF00) >> 8);
-			if(noteState) {connect();}
-		}
-		inline void disconnect() {
-			if(_noteOn) {
-				outp(PPI_CONTROL, inp(PPI_CONTROL) & 0xFC);
-				_noteOn = false;
-			}
-		}
-		inline void connect() {
-			if(!_noteOn) {
-				outp(PPI_CONTROL, inp(PPI_CONTROL) | 0x03);
-				_noteOn = true;
-			}
-		}
-		inline bool isConnected() {return _noteOn;}
-		inline Speaker() {
-			_noteOn = false;
-		}
-		inline ~Speaker() {
-			disconnect();
-		}
-		
-	private:
-		bool _noteOn;
+#ifndef FMPANE_HPP
+#define FMPANE_HPP
+#include "Pane.hpp"
+class FMPane : public Pane {
+    public:
+        FMPane(TextMode screen);
+        ~FMPane();
+        void updateParameter(int id, int value);
+        void drawStatic();
+        int getBottom();
+    
+        std::pair<int, int> getPosition(int item);
+        int getParameterCount();
+    private:
+        static const int PARAMETER_COUNT = 24;
+        static const unsigned char _positions[FMPane::PARAMETER_COUNT][2];
+        TextMode _screen;
+        int _lastPos;
+        int _values[PARAMETER_COUNT];
 };
 #endif

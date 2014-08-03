@@ -1,7 +1,7 @@
 /*
  *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
  *  Soundblaster with MPU-401 UART compatible interfaces.
- *  Copyright (C) 2011  Kyle Delaney
+ *  Copyright (C) 2014  Kyle Delaney
  *
  *  This file is a part of BASS.
  *
@@ -20,27 +20,34 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#ifndef BEEPER_INSTRUMENT_HPP
-#define BEEPER_INSTRUMENT_HPP
-#include "Speaker.hpp"
-#include "AbstInst.hpp"
-class Speaker;
-class BeeperInstrument: public AbstractInstrument {
+#ifndef MIDIBOSS_HPP
+#define MIDIBOSS_HPP
+#include <vector>
+class MPU;
+class Vox;
+class MidiBoss {
 	public:
-		void playNote(unsigned char note, unsigned char velocity);
-		void stopNote(unsigned char note);
-		void pitchBend(signed int offset);
-		void pressureChangeNote(unsigned char note, unsigned char pressure);
-		void silence();
-		void update(int ticks);
+		void init(MPU* dev);
+		void addInstrument(Vox*);
+		void pollEvents();
+		void updateModulation(int ticks);
 	
-		BeeperInstrument();
-		~BeeperInstrument();
+		MidiBoss();
+		~MidiBoss();
+	
 	private:
-		static const unsigned short int _timingTable[2048];
-		Speaker _speaker;
-		unsigned char _currentNote;
-		signed short _currentBend;
-		unsigned int _tremoloStep;
+		std::vector<Vox*> _instruments;
+		MPU* _dev;
+        enum {
+            BYTE_CHANNEL,
+            BYTE_NOTE,
+            BYTE_VELOCITY
+		} _state;
+	
+		unsigned char _channel;
+		unsigned char _command;
+		unsigned char _note;
+		unsigned char _velocity;
+		signed int _offset;
 };
 #endif

@@ -1,7 +1,7 @@
 /*
  *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
  *  Soundblaster with MPU-401 UART compatible interfaces.
- *  Copyright (C) 2011  Kyle Delaney
+ *  Copyright (C) 2014  Kyle Delaney
  *
  *  This file is a part of BASS.
  *
@@ -20,28 +20,54 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#include <iostream>
-#include "DebugIns.hpp"
-void DebugInstrument::playNote(unsigned char note, unsigned char velocity)
-{
-	std::cout << "Note on: " << int(note) << " Velocity: " << int(velocity) << std::endl;
+#include "Cursor.hpp"
+using std::uint8_t;
+Cursor::Cursor() {
+    uint8_t x, y;
+    uint8_t top, bottom;
+    _asm {
+        mov ah, 03h
+        mov bh, 00h
+        int 10h
+        mov x, dl
+        mov y, dh
+        mov top, ch
+        mov bottom, cl
+    }
+    _x = x;
+    _y = y;
+    _top = top;
+    _bottom = bottom;
 }
-void DebugInstrument::stopNote(unsigned char note)
-{
-	std::cout << "Note off: " << int(note) << std::endl;
+void Cursor::moveTo(uint8_t x, uint8_t y) {
+    _x = x;
+    _y = y;
+    _asm {
+        mov ah, 2
+        mov bh, 0
+        mov dl, x
+        mov dh, y
+        int 10h
+    }
 }
-void DebugInstrument::pitchBend(signed int offset)
-{
-	std::cout << "Pitch Bend: " << offset << std::endl;
+void Cursor::moveBy(uint8_t x, uint8_t y) {
+    moveTo(_x+x,_y+y);
 }
-void DebugInstrument::pressureChangeNote(unsigned char note, unsigned char pressure)
-{
-	std::cout << "Aftertouch note: " << int(note) << " Pressure: " << int(pressure) << std::endl;
+void Cursor::hide() {
+    _asm {
+        mov ah, 1h
+        mov ch, 00100000b
+        mov cl, 0
+        int 10h
+    }
 }
-void DebugInstrument::silence()
-{
-	std::cout << "Silenced." << std::endl;
-}
-void DebugInstrument::cc(unsigned char id, unsigned char value) {
-    std::cout << "CC ID:" << (int)id << " Value: " << (int)value << std::endl;
+void Cursor::show() {
+    uint8_t top = _top;
+    uint8_t bottom = _bottom;
+    _asm {
+        mov ah, 1h
+        mov ch, top
+        mov cl, bottom
+        int 10h
+    }
 }

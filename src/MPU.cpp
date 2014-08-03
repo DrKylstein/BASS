@@ -1,7 +1,7 @@
 /*
  *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
  *  Soundblaster with MPU-401 UART compatible interfaces.
- *  Copyright (C) 2011  Kyle Delaney
+ *  Copyright (C) 2014  Kyle Delaney
  *
  *  This file is a part of BASS.
  *
@@ -20,23 +20,23 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#include "MidiDev.hpp"
+#include "MPU.hpp"
 #include <conio>
 #include <cassert>
-bool MidiDevice::isDetected() {
+bool MPU::isDetected() {
 	return _hardwareOk;
 }
-bool MidiDevice::dataReady() {
+bool MPU::dataReady() {
 	if(_hardwareOk)
 		return !(inp(0x331) & 0x80);
 	return false;
 }
-unsigned char MidiDevice::read() {
+unsigned char MPU::read() {
 	if(dataReady())
 		return inp(0x330);
 	return 0xFF;
 }
-MidiDevice::MidiDevice() {	
+MPU::MPU() {	
 	//Hardware initialization for MPU401
 	_hardwareOk = false;
 	//read status before setting mode
@@ -71,7 +71,7 @@ MidiDevice::MidiDevice() {
 		}
 	}
 }
-MidiDevice::~MidiDevice() {
+MPU::~MPU() {
 	if(_hardwareOk) {
 		//read status before setting mode
 		while(inp(0x331) & 0x40) {}

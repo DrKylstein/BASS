@@ -1,7 +1,7 @@
 /*
  *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
  *  Soundblaster with MPU-401 UART compatible interfaces.
- *  Copyright (C) 2011  Kyle Delaney
+ *  Copyright (C) 2014  Kyle Delaney
  *
  *  This file is a part of BASS.
  *
@@ -20,23 +20,20 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#ifndef ABSTRACT_INSTRUMENT_HPP
-#define ABSTRACT_INSTRUMENT_HPP
-class AbstractInstrument {
+#ifndef MPU_HPP
+#define MPU_HPP
+
+class MPU {
 	public:
-		virtual void playNote(unsigned char note, unsigned char velocity) = 0;
-		virtual void stopNote(unsigned char note) = 0;
-		virtual void silence() = 0;
-    
-		virtual void pitchBend(signed int offset) {};
-		virtual void pressureChangeNote(unsigned char note, unsigned char pressure) {};
-        virtual void cc(unsigned char id, unsigned char value) {};
-		virtual void update(int ticks) {};
-        virtual void programChange(int program) {};
-            
-        virtual void resetParameters() {};
-        virtual void setParameter(int id) {};
-            
-		unsigned char channel, startingNote, endingNote, transpose;
+		bool isDetected(void);
+		bool dataReady();
+		unsigned char read();
+		MPU(void);
+		~MPU(void);
+	
+	private:
+		bool _hardwareOk;
+		int status, data;
+		static bool _instatiated;
 };
 #endif

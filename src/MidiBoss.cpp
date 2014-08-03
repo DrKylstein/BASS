@@ -1,7 +1,7 @@
 /*
  *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
  *  Soundblaster with MPU-401 UART compatible interfaces.
- *  Copyright (C) 2011  Kyle Delaney
+ *  Copyright (C) 2014  Kyle Delaney
  *
  *  This file is a part of BASS.
  *
@@ -20,26 +20,26 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#include "MidiDisp.hpp"
-#include "MidiDev.hpp"
-#include "AbstInst.hpp"
+#include "MidiBoss.hpp"
+#include "MPU.hpp"
+#include "Vox.hpp"
 #include <iostream>
 
 #define NOTE_ON 0x90
 #define NOTE_OFF 0x80
 #define CC_CHANGE 0xB0
 #define PITCHBEND 0xE0
-typedef std::vector<AbstractInstrument*>::iterator InstrIter;
+typedef std::vector<Vox*>::iterator InstrIter;
 
-void MidiDispatcher::addInstrument(AbstractInstrument* p) {
+void MidiBoss::addInstrument(Vox* p) {
 	_instruments.push_back(p);
 }
-void MidiDispatcher::updateModulation(int ticks) {
+void MidiBoss::updateModulation(int ticks) {
 	for(InstrIter it = _instruments.begin(); it != _instruments.end(); ++it) {
 		(*it)->update(ticks);
 	}
 }
-void MidiDispatcher::pollEvents() {
+void MidiBoss::pollEvents() {
 	if(_dev->dataReady()) {
 		unsigned char midi_byte = _dev->read();
 		if(midi_byte == 0xF8) {
@@ -101,7 +101,7 @@ void MidiDispatcher::pollEvents() {
 		}
 	}
 }
-void MidiDispatcher::init(MidiDevice* dev) {
+void MidiBoss::init(MPU* dev) {
 	_dev = dev;
 	/*if(_dev->isDetected()) {
 		std::cout << "Using MPU401." <<std::endl;
@@ -109,8 +109,8 @@ void MidiDispatcher::init(MidiDevice* dev) {
 		std::cout << "No Midi hardware detected!" << std::endl;
 	}*/
 }
-MidiDispatcher::MidiDispatcher() {
+MidiBoss::MidiBoss() {
 	_state = BYTE_CHANNEL;
 }
-MidiDispatcher::~MidiDispatcher() {
+MidiBoss::~MidiBoss() {
 }

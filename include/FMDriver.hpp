@@ -1,13 +1,35 @@
-#ifndef OPLDRIVER_HPP
-#define OPLDRIVER_HPP
+/*
+ *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
+ *  Soundblaster with MPU-401 UART compatible interfaces.
+ *  Copyright (C) 2014  Kyle Delaney
+ *
+ *  This file is a part of BASS.
+ *
+ *  BASS is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  BASS is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  You may contact the author at <dr.kylstein@gmail.com>
+ */
+#ifndef FMDRIVER_HPP
+#define FMDRIVER_HPP
 #include <cstdint>
-class OPLDriver {
+class FMDriver {
     public:
         static const int CHANNEL_COUNT = 9;
         static const int OPERATOR_COUNT = 18;
         static const int MAX_VOLUME = 0x3F;
-        OPLDriver();
-        ~OPLDriver();
+        FMDriver();
+        ~FMDriver();
         void reset();
     
         void setTremoloDepth(bool high);

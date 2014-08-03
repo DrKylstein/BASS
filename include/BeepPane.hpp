@@ -1,7 +1,7 @@
 /*
  *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
  *  Soundblaster with MPU-401 UART compatible interfaces.
- *  Copyright (C) 2011  Kyle Delaney
+ *  Copyright (C) 2014  Kyle Delaney
  *
  *  This file is a part of BASS.
  *
@@ -20,20 +20,22 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#ifndef MIDIDEVICE_HPP
-#define MIDIDEVICE_HPP
-
-class MidiDevice {
-	public:
-		bool isDetected(void);
-		bool dataReady();
-		unsigned char read();
-		MidiDevice(void);
-		~MidiDevice(void);
-	
-	private:
-		bool _hardwareOk;
-		int status, data;
-		static bool _instatiated;
+#ifndef BEEPPANE_HPP
+#define BEEPPANE_HPP
+#include "TextMode.hpp"
+#include "Pane.hpp"
+class BeepPane : public Pane {
+    public:
+        BeepPane(TextMode screen);
+        ~BeepPane();
+        void updateParameter(int id, int value);
+        void drawStatic();
+        int getBottom();
+    
+        std::pair<int, int> getPosition(int item);
+        int getParameterCount();
+    private:
+        TextMode _screen;
+        int _lastPos;
 };
 #endif

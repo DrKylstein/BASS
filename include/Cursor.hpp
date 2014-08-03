@@ -1,7 +1,7 @@
 /*
  *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
  *  Soundblaster with MPU-401 UART compatible interfaces.
- *  Copyright (C) 2011  Kyle Delaney
+ *  Copyright (C) 2014  Kyle Delaney
  *
  *  This file is a part of BASS.
  *
@@ -20,17 +20,18 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#ifndef DEBUGINSTRUMENT_HPP
-#define DEBUGINSTRUMENT_HPP
-#include "AbstInst.hpp"
-class DebugInstrument: public AbstractInstrument
-{
-	public:
-		void playNote(unsigned char note, unsigned char velocity);
-		void stopNote(unsigned char note);
-		void pitchBend(signed int offset);
-		void pressureChangeNote(unsigned char note, unsigned char pressure);
-		void silence();
-        void cc(unsigned char id, unsigned char value);
+#ifndef CURSOR_HPP
+#define CURSOR_HPP
+#include <cstdint>
+class Cursor {
+    public:
+        Cursor();
+        void moveTo(std::uint8_t x, std::uint8_t y);
+        void moveBy(std::uint8_t x, std::uint8_t y);
+        void hide();
+        void show();
+    private:
+        std::uint8_t _x, _y;
+        std::uint8_t _top, _bottom;
 };
 #endif

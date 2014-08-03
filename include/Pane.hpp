@@ -20,47 +20,28 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
-#ifndef SPEAKER_HPP
-#define SPEAKER_HPP
-#include <conio>
-#define PIT_COUNTER_TWO	0x42
-#define PIT_MODE			0x43
-#define PPI_CONTROL		0x61
-
-class Speaker {	
-	public:
-		inline void setFrequency(unsigned long int freq) {
-			setTimer( 1193180 / freq );
-		}
-		inline void setTimer(unsigned short int t) {
-			bool noteState = _noteOn;
-			disconnect();
-			outp(PIT_MODE, 0xB6);
-			outp(PIT_COUNTER_TWO, t & 0xFF);
-			outp(PIT_COUNTER_TWO, (t & 0xFF00) >> 8);
-			if(noteState) {connect();}
-		}
-		inline void disconnect() {
-			if(_noteOn) {
-				outp(PPI_CONTROL, inp(PPI_CONTROL) & 0xFC);
-				_noteOn = false;
-			}
-		}
-		inline void connect() {
-			if(!_noteOn) {
-				outp(PPI_CONTROL, inp(PPI_CONTROL) | 0x03);
-				_noteOn = true;
-			}
-		}
-		inline bool isConnected() {return _noteOn;}
-		inline Speaker() {
-			_noteOn = false;
-		}
-		inline ~Speaker() {
-			disconnect();
-		}
-		
-	private:
-		bool _noteOn;
+#ifndef PANE_HPP
+#define PANE_HPP
+#include "TextMode.hpp"
+#include <utility>
+class Pane {
+    public:
+        virtual void updateParameter(int id, int value) = 0;
+        virtual void drawStatic() = 0;
+        virtual int getBottom() = 0;
+        int getTop();
+    
+        virtual std::pair<int, int> getPosition(int item) = 0;
+        virtual int getParameterCount() = 0;
+    
+        void insertAfter(Pane& p);
+        void dettach();
+        Pane* getNext();
+        Pane* getPrevious();
+    protected:
+        void _clearLinks();
+    private:
+        Pane* _next;
+        Pane* _previous;
 };
 #endif

@@ -1,7 +1,7 @@
 /*
  *  BASS, a MIDI controled synthesizer for MSDOS systems using Adlib or 
  *  Soundblaster with MPU-401 UART compatible interfaces.
- *  Copyright (C) 2011  Kyle Delaney
+ *  Copyright (C) 2014  Kyle Delaney
  *
  *  This file is a part of BASS.
  *
@@ -23,25 +23,17 @@
 //include <iostream>
 #include <cstring>
 #include <vector>
-#include "MidiDev.hpp"
-#include "MidiDisp.hpp"
-#include "BeepInst.hpp"
-#include "DebugIns.hpp"
-#include "OPLDriver.hpp"
-#include "AdlibMelodicInstrument.hpp"
-#include "TextScreen.hpp"
-#include "AdlibMelodicControlPanel.hpp"
-#include "PCKeyboard.hpp"
-#include "BeeperControlPanel.hpp"
-#include "TextCursor.hpp"
-//volatile int clock_ticks;
-//void (__interrupt __far *prev_int_1c)();
-//define BLIP_COUNT 1 //18ticks = 1second
-//~ void __interrupt __far timer_rtn()
-//~ {
-	//~ ++clock_ticks;
-	//~ _chain_intr( prev_int_1c );
-//~ }
+#include "MPU.hpp"
+#include "MidiBoss.hpp"
+#include "BeepVox.hpp"
+#include "DebugVox.hpp"
+#include "FMDriver.hpp"
+#include "FMVox.hpp"
+#include "TextMode.hpp"
+#include "FMPane.hpp"
+#include "PCKeys.hpp"
+#include "BeepPane.hpp"
+#include "Cursor.hpp"
 
 static const char* buttons[] = {
     "9 Debug",
@@ -52,40 +44,37 @@ static const char* buttons[] = {
 
 
 int main() {
-	//std::cout << "B.eeper A.dlib S.oundblaster S.ynth. (C) 2013 Kyle Delaney" << std::endl;
-	
-	MidiDevice mpu401;
-	MidiDispatcher midi;
+	MPU mpu401;
+	MidiBoss midi;
 	midi.init(&mpu401);
-	//std::cout << "Midi initalized." << std::endl;
 	
-    TextScreen screen;
-    TextCursor cursor;
+    TextMode screen;
+    Cursor cursor;
     
-    BeeperControlPanel beeperCtl(screen);
+    BeepPane beeperCtl(screen);
     
-    ControlPanel* head = &beeperCtl;
+    Pane* head = &beeperCtl;
     
-	BeeperInstrument speaker;
+	BeepVox speaker;
 	speaker.channel = 0;
 	speaker.startingNote = 0;
 	speaker.endingNote = 127;
 	speaker.transpose = 0;
 	midi.addInstrument(&speaker);
 	
-    OPLDriver oplDriver;
+    FMDriver oplDriver;
     
-    AdlibMelodicControlPanel adlibCtl(screen);
+    FMPane adlibCtl(screen);
     adlibCtl.insertAfter(beeperCtl);
     
-	AdlibMelodicInstrument adlib(&oplDriver, 0, 6, &adlibCtl);
+	FMVox adlib(&oplDriver, 0, 6, &adlibCtl);
 	adlib.channel = 1;
 	adlib.startingNote = 0;
 	adlib.endingNote = 127;
 	adlib.transpose = -1;
 	midi.addInstrument(&adlib);
 	
-	DebugInstrument debug;
+	DebugVox debug;
 	debug.channel = 3;
 	debug.startingNote = 0;
 	debug.endingNote = 127;
@@ -93,7 +82,7 @@ int main() {
 	//midi.addInstrument(&debug);
 	   
        
-    std::vector<AbstractInstrument*> instruments;
+    std::vector<Vox*> instruments;
        
     instruments.push_back(&speaker);
     instruments.push_back(&adlib);
@@ -109,15 +98,15 @@ int main() {
     }
     
     
-    for (ControlPanel* p = head; p != 0; p = p->getNext()) {
+    for (Pane* p = head; p != 0; p = p->getNext()) {
         p->drawStatic();
     }
 
-    for (std::vector<AbstractInstrument*>::iterator it = instruments.begin() ; it != instruments.end(); ++it) {
+    for (std::vector<Vox*>::iterator it = instruments.begin() ; it != instruments.end(); ++it) {
         (*it)->resetParameters();
     }
     
-    PCKeyboard pckey;
+    PCKeys pckey;
     
     int pos = 0;
     bool moved = true;
@@ -138,10 +127,10 @@ int main() {
                     screen.printHex(i, 0x70, 0, 8+i);
                 }               
             } else {
-                for (ControlPanel* p = head; p != 0; p = p->getNext()) {
+                for (Pane* p = head; p != 0; p = p->getNext()) {
                     p->drawStatic();
                 }
-                for (std::vector<AbstractInstrument*>::iterator it = instruments.begin() ; it != instruments.end(); ++it) {
+                for (std::vector<Vox*>::iterator it = instruments.begin() ; it != instruments.end(); ++it) {
                     (*it)->resetParameters();
                 }
             }
@@ -169,7 +158,7 @@ int main() {
         if(moved) {
             moved = false;
             int rpos = pos;
-            for (ControlPanel* p = head; p != 0; p = p->getNext()) {
+            for (Pane* p = head; p != 0; p = p->getNext()) {
                 if(rpos >= p->getParameterCount()) {
                     rpos -= p->getParameterCount();
                     continue;
@@ -180,7 +169,6 @@ int main() {
 
 		
 	}	
-	//std::cout << "Exiting." << std::endl;
 	    
     _asm {
         mov ax,3
