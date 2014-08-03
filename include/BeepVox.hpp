@@ -24,6 +24,8 @@
 #define BEEPVOX_HPP
 #include "Speaker.hpp"
 #include "Vox.hpp"
+#include "BeepVox.hpp"
+#include "BeepPane.hpp"
 class Speaker;
 class BeepVox: public Vox {
 	public:
@@ -34,7 +36,14 @@ class BeepVox: public Vox {
 		void silence();
 		void update(int ticks);
 	
-		BeepVox();
+        enum {
+            P_MIDI_CHANNEL,
+            PARAMETER_COUNT
+        };
+        void resetParameters();
+        void setParameter(int id, unsigned char value);
+        
+		BeepVox(BeepPane* pane);
 		~BeepVox();
 	private:
 		static const unsigned short int _timingTable[2048];
@@ -42,5 +51,6 @@ class BeepVox: public Vox {
 		unsigned char _currentNote;
 		signed short _currentBend;
 		unsigned int _tremoloStep;
+        BeepPane* _pane;
 };
 #endif

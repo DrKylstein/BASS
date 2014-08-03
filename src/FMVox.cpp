@@ -283,6 +283,7 @@ void FMVox::resetParameters() {
     }
 }
 static const int _divisors[FMVox::PARAMETER_COUNT] = {
+    0,
     3,3,3,3,1,3,6,6,6,
     3,3,3,3,1,3,6,6,6,
     6,4, 6,6, 4,4
@@ -293,82 +294,85 @@ void FMVox::setParameter(int id, unsigned char value) {
     value >>= _divisors[id];
     _panel->updateParameter(id, value);
     switch(id) {
-        case 20:
+        case P_MIDI_CHANNEL:
+            channel = value;
+            return;
+        case P_TREMOLO_DEPTH:
             _driver->setTremoloDepth(value);
             return;
-        case 21:
+        case P_VIBRATO_DEPTH:
             _driver->setVibratoDepth(value);
             return;
     }
     for(int c = 0; c < _channelCount; c++) {
         switch(id) {
-            case 0:
+            case P_MOD_ATTACK:
                 _driver->setAttack(_firstChannel+c, 0, value);
                 break;
-            case 1:
+            case P_MOD_DECAY:
                 _driver->setDecay(_firstChannel+c, 0, value);
                 break;
-            case 2:
+            case P_MOD_SUSTAIN:
                 _driver->setSustain(_firstChannel+c, 0, value);
                 break;
-            case 3:
+            case P_MOD_RELEASE:
                 _driver->setRelease(_firstChannel+c, 0, value);
                 break;
-            case 4:
+            case P_MOD_VOLUME:
                 _driver->setVolume(_firstChannel+c, 0, value);
                 break;
-            case 5:
+            case P_MOD_FREQMULT:
                 _driver->setFreqMult(_firstChannel+c, 0, value);
                 break;
-            case 6:
+            case P_MOD_TREMOLO:
                 _driver->setTremolo(_firstChannel+c, 0, value);
                 break;
-            case 7:
+            case P_MOD_VIBRATO:
                 _driver->setVibrato(_firstChannel+c, 0, value);
                 break;
-            case 8:
+            case P_MOD_HOLD:
                 _driver->setHold(_firstChannel+c, 0, value);
                 break;
             
-            case 9:
+            case P_CARRIER_ATTACK:
                 _driver->setAttack(_firstChannel+c, 1, value);
                 break;
-            case 10:
+            case P_CARRIER_DECAY:
                 _driver->setDecay(_firstChannel+c, 1, value);
                 break;
-            case 11:
+            case P_CARRIER_SUSTAIN:
                 _driver->setSustain(_firstChannel+c, 1, value);
                 break;
-            case 12:
+            case P_CARRIER_RELEASE:
                 _driver->setRelease(_firstChannel+c, 1, value);
                 break;
-            case 13:
+            case P_CARRIER_VOLUME:
                 _driver->setVolume(_firstChannel+c, 1, value);
                 break;
-            case 14:
+            case P_CARRIER_FREQMULT:
                 _driver->setFreqMult(_firstChannel+c, 1, value);
                 break;
-            case 15:
+            case P_CARRIER_TREMOLO:
                 _driver->setTremolo(_firstChannel+c, 1, value);
                 break;
-            case 16:
+            case P_CARRIER_VIBRATO:
                 _driver->setVibrato(_firstChannel+c, 1, value);
                 break;
-            case 17:
+            case P_CARRIER_HOLD:
                 _driver->setHold(_firstChannel+c, 1, value);
                 break;
             
-            case 18:
+            case P_AM:
                 _driver->setAM(_firstChannel+c, value);
                 break;
-            case 19:
+            case P_FEEDBACK:
                 _driver->setFeedback(_firstChannel+c, value);
                 break;
             
-            case 22:
+            case P_MOD_WAVE:
                 _driver->setWaveform(_firstChannel+c, 0, value);
                 break;
-            case 23:
+            case P_CARRIER_WAVE:
                 _driver->setWaveform(_firstChannel+c, 1, value);
                 break;
         }
@@ -378,81 +382,81 @@ void FMVox::setParameter(int id, unsigned char value) {
 void FMVox::cc(unsigned char id, unsigned char value) {
     switch(id) {
         case 20:
-            setParameter(0, value);
+            setParameter(P_MOD_ATTACK, value);
             break;
         case 21:
-            setParameter(1, value);
+            setParameter(P_MOD_DECAY, value);
             break;
         case 22:
-            setParameter(2, value);
+            setParameter(P_MOD_SUSTAIN, value);
             break;
         case 23:
-            setParameter(3, value);
+            setParameter(P_MOD_RELEASE, value);
             break;
         case 3:
-            setParameter(4, value);
+            setParameter(P_MOD_VOLUME, value);
             break;
         case 9:
-            setParameter(5, value);
+            setParameter(P_MOD_FREQMULT, value);
             break;
         case 28:
-            setParameter(6, value);
+            setParameter(P_MOD_TREMOLO, value);
             break;
         case 29:
-            setParameter(7, value);
+            setParameter(P_MOD_VIBRATO, value);
             break;
         case 30:
-            setParameter(8, value);
+            setParameter(P_MOD_HOLD, value);
             break;
 
         
         case 24:
-            setParameter(9, value);
+            setParameter(P_CARRIER_ATTACK, value);
             break;
         case 25:
-            setParameter(10, value);
+            setParameter(P_CARRIER_DECAY, value);
             break;
         case 26:
-            setParameter(11, value);
+            setParameter(P_CARRIER_SUSTAIN, value);
             break;
         case 27:
-            setParameter(12, value);
+            setParameter(P_CARRIER_RELEASE, value);
             break;
         case 16:
-            setParameter(13, value);
+            setParameter(P_CARRIER_VOLUME, value);
             break;
         case 17:
-            setParameter(14, value);
+            setParameter(P_CARRIER_FREQMULT, value);
             break;
         case 35:
-            setParameter(15, value);
+            setParameter(P_CARRIER_TREMOLO, value);
             break;
         case 41:
-            setParameter(16, value);
+            setParameter(P_CARRIER_VIBRATO, value);
             break;
         case 46:
-            setParameter(17, value);
+            setParameter(P_CARRIER_HOLD, value);
             break;
 
         
         case 47:
-            setParameter(18, value);
+            setParameter(P_AM, value);
             break;
         case 19:
-            setParameter(19, value);
+            setParameter(P_FEEDBACK, value);
             break;
         case 75:
-            setParameter(20, value);
+            setParameter(P_TREMOLO_DEPTH, value);
             break;
         case 76:
-            setParameter(21, value);
+            setParameter(P_VIBRATO_DEPTH, value);
             break;
         
         case 14:
-            setParameter(22, value);
+            setParameter(P_MOD_WAVE, value);
             break;
         case 18:
-            setParameter(23, value);
+            setParameter(P_CARRIER_WAVE, value);
             break;
         default:
             break;

@@ -55,7 +55,7 @@ int main() {
     
     Pane* head = &beeperCtl;
     
-	BeepVox speaker;
+	BeepVox speaker(&beeperCtl);
 	speaker.channel = 0;
 	speaker.startingNote = 0;
 	speaker.endingNote = 127;
@@ -68,7 +68,7 @@ int main() {
     adlibCtl.insertAfter(beeperCtl);
     
 	FMVox adlib(&oplDriver, 0, 6, &adlibCtl);
-	adlib.channel = 1;
+	adlib.setParameter(FMVox::P_MIDI_CHANNEL, 1);
 	adlib.startingNote = 0;
 	adlib.endingNote = 127;
 	adlib.transpose = -1;

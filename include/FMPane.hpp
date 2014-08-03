@@ -35,10 +35,9 @@ class FMPane : public Pane {
         std::pair<int, int> getPosition(int item);
         int getParameterCount();
     private:
-        static const int PARAMETER_COUNT = 24;
+        static const int PARAMETER_COUNT = 25;
         static const unsigned char _positions[FMPane::PARAMETER_COUNT][2];
         TextMode* _screen;
-        int _lastPos;
         int _values[PARAMETER_COUNT];
 };
 #endif

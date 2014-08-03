@@ -39,7 +39,34 @@ class FMVox: public Vox {
         void setParameter(int id, unsigned char value);
         void resetParameters();
     
-        static const int PARAMETER_COUNT = 24;
+        enum {
+            P_MIDI_CHANNEL,
+            P_MOD_ATTACK,
+            P_MOD_DECAY,
+            P_MOD_SUSTAIN,
+            P_MOD_RELEASE,
+            P_MOD_VOLUME,
+            P_MOD_FREQMULT,
+            P_MOD_WAVE,
+            P_MOD_TREMOLO,
+            P_MOD_VIBRATO,
+            P_MOD_HOLD,
+            P_CARRIER_ATTACK,
+            P_CARRIER_DECAY,
+            P_CARRIER_SUSTAIN,
+            P_CARRIER_RELEASE,
+            P_CARRIER_VOLUME,
+            P_CARRIER_FREQMULT,
+            P_CARRIER_WAVE,
+            P_CARRIER_TREMOLO,
+            P_CARRIER_VIBRATO,
+            P_CARRIER_HOLD,
+            P_AM,
+            P_FEEDBACK,
+            P_TREMOLO_DEPTH,
+            P_VIBRATO_DEPTH,
+            PARAMETER_COUNT
+        };
     
 		FMVox(FMDriver* driver, int firstChannel, int channelCount, Pane* panel);
 		~FMVox();

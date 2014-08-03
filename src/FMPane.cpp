@@ -23,9 +23,10 @@
 #include "FMPane.hpp"
 
 static const unsigned char FMPane::_positions[FMPane::PARAMETER_COUNT][2] = {
-    {6,2},{10,2},{14,2},{18,2},{22,2},{26,2}, {30,2},{34,2},{38,2}, 
-    {6,3},{10,3},{14,3},{18,3},{22,3},{26,3}, {30,3},{34,3},{38,3}, {46,2},{50,2}, {54,2},{58,2},
-    {42, 2}, {42, 3}
+    {77,0},
+    {6,2},{10,2},{14,2},{18,2},{22,2},{26,2}, {30,2},{34,2},{38,2},{42,2},
+    {6,3},{10,3},{14,3},{18,3},{22,3},{26,3}, {30,3},{34,3},{38,3},{42,3}, 
+    {46,2},{50,2}, {54,2},{58,2}
 };
 
 static const char* labels[] = {
@@ -36,7 +37,6 @@ static const char* labels[] = {
 FMPane::FMPane(TextMode* screen) {
     _clearLinks();
     _screen = screen;
-    _lastPos = -1;
     for(int i = 0; i < PARAMETER_COUNT; i++) {
         _values[i] = 0;
     }
@@ -60,7 +60,7 @@ void FMPane::updateParameter(int id, int value) {
 
 void FMPane::drawStatic() {
     _screen->box(0x07, 0, getTop(), 80, 5);
-    _screen->print("Adlib Melodic", 0x07, 1, getTop());
+    _screen->print("Adlib", 0x07, 1, getTop());
     _screen->print("OP1",0x07,2,getTop()+2);
     _screen->print("OP1",0x07,2,getTop()+3);
     for(int i = 0; i < 14; i++) {

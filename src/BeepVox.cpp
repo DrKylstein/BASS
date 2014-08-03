@@ -149,7 +149,23 @@ void BeepVox::update(int ticks) {
 	_speaker.setTimer(_timingTable[( (_currentNote + 12) << 4) + (_currentBend >> 8) + _tremoloStep - 1]);
 }
 
-BeepVox::BeepVox() {
+void BeepVox::resetParameters() {
+    for(int i = 0; i < PARAMETER_COUNT; i++) {
+        _pane->updateParameter(i, 0);
+    }
+}
+void BeepVox::setParameter(int id, unsigned char value) {
+    if(id >= PARAMETER_COUNT) return;
+    _pane->updateParameter(id, value);
+    switch(id) {
+        case P_MIDI_CHANNEL:
+            channel = value;
+            break;
+    }
+}
+
+
+BeepVox::BeepVox(BeepPane* pane): _pane(pane) {
 	_currentNote = _currentBend = _tremoloStep = 0;
 }
 BeepVox::~BeepVox() {
