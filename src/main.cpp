@@ -133,10 +133,9 @@ int main() {
     int pos = 0;
     cursor.moveTo(currentPane->getPosition(pos).first, 
         currentPane->getPosition(pos).second);
+    
     bool oplDebug = false;
-    
     bool editMode = false;
-    
     int editValue = 0;
     
 	while(true) {

@@ -48,23 +48,27 @@ TextMode::~TextMode() {
     inputRegisters.x.ax = 0x0003;
     int86(0x10, &inputRegisters, &resultRegisters);
 }
+void TextMode::print(char c, uint8_t attrib, int x, int y) {
+    mScreen[y*80 + x] = c | ((uint16_t)attrib << 8);
+}
+uint16_t TextMode::get(int x, int y) {
+    return mScreen[y*80 + x];
+}
 
 void TextMode::print(std::string str, uint8_t attrib, int x, int y) {
-    int i = 0;
     for (std::string::iterator it=str.begin(); it!=str.end(); ++it) {
-        mScreen[y*80 + x + i++] = (*it) | ((uint16_t)attrib << 8);
+        print((*it), attrib, x, y);
+        x++;
     }
 }
 void TextMode::print(int num, uint8_t attrib, int x, int y) {
-    int i = 0;
     do {
-        mScreen[y*80 + x + i] = ((num % 10) + '0') | ((uint16_t)attrib << 8);
+        print((char)((num % 10) + '0'), attrib, x, y);
         num /= 10;
-        i--;
+        x--;
     } while(num);
 }
 void TextMode::printHex(int num, uint8_t attrib, int x, int y) {
-    int i = 0;
     do {
         char c = '0';
         if((num & 0xF) < 0xA) {
@@ -72,9 +76,9 @@ void TextMode::printHex(int num, uint8_t attrib, int x, int y) {
         } else {
             c = (num & 0xF) - 10 + 'A';
         }
-        mScreen[y*80 + x + i] = c | ((uint16_t)attrib << 8);
+        print(c, attrib, x, y);
         num >>= 4;
-        i--;
+        x--;
     } while(num);
 }
 
@@ -104,7 +108,7 @@ void TextMode::box(uint8_t attrib, int x, int y, int width, int height) {
                 ly = 1;
             }
             if(lx != 1 || ly != 1) {
-                mScreen[dy*80 + dx] = BOX_CHARS[ly][lx] | ((uint16_t)attrib << 8);
+                print(BOX_CHARS[ly][lx], attrib, dx, dy);
             }
         }
     }
@@ -122,7 +126,7 @@ void TextMode::hbar(uint8_t attrib, int x, int y, int width) {
     int ly = 1;
     for(int dx = x; dx < x+width; dx++) {
         uint8_t symbol = 0xCD;
-        if((mScreen[y*80 + dx] & 0x00FF) == 0xBA) {
+        if((get(dx, y) & 0x00FF) == 0xBA) {
             if(dx == x) {
                 symbol = 0xCC;
             } else if(dx == x+width-1) {
@@ -131,15 +135,14 @@ void TextMode::hbar(uint8_t attrib, int x, int y, int width) {
                 symbol = 0xCE;
             }
         }
-        mScreen[y*80 + dx] = symbol | ((uint16_t)attrib << 8);
-        
+        print((char)symbol, attrib, dx, y);
     }
 }
 
 void TextMode::fill(char c, uint8_t attrib, int x, int y, int width, int height) {
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
-            mScreen[(y+i)*80 + x + j] = c | ((uint16_t)attrib << 8);
+            print(c, attrib, x+j, y+i);
         }
     }
 }

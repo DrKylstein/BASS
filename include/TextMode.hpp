@@ -10,6 +10,8 @@ class TextMode {
         TextMode();
         ~TextMode();
         void fill(char c, uint8_t attrib, int x, int y, int width, int height);
+        void print(char c, uint8_t attrib, int x, int y);
+        uint16_t get(int x, int y);
         void print(std::string str, uint8_t attrib, int x, int y);
         void print(int num, uint8_t attrib, int x, int y);
         void printHex(int num, uint8_t attrib, int x, int y);
