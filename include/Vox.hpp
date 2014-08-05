@@ -37,6 +37,6 @@ class Vox {
         virtual void resetParameters() {};
         virtual void setParameter(int id, unsigned char value) {};
             
-		unsigned char channel, startingNote, endingNote, transpose;
+		unsigned char channel, ccChannel, startingNote, endingNote, transpose;
 };
 #endif

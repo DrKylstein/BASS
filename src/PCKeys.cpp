@@ -142,3 +142,27 @@ static void __interrupt __far PCKeys::keyboard_int() {
     //notify Programmable Interrupt Controller that we've finished
     //outp(0x20, 0x20);
 }
+int PCKeys::getDigit() {
+    if(wasPressed(KeySym::zero)) {
+        return 0;           
+    } else if(wasPressed(KeySym::one)) {
+        return 1;           
+    } else if(wasPressed(KeySym::two)) {
+        return 2;           
+    } else if(wasPressed(KeySym::three)) {
+        return 3;           
+    } else if(wasPressed(KeySym::four)) {
+        return 4;            
+    } else if(wasPressed(KeySym::five)) {
+        return 5;            
+    } else if(wasPressed(KeySym::six)) {
+        return 6;            
+    } else if(wasPressed(KeySym::seven)) {
+        return 7;            
+    } else if(wasPressed(KeySym::eight)) {
+        return 8;            
+    } else if(wasPressed(KeySym::nine)) {
+        return 9;           
+    }
+    return -1;
+}

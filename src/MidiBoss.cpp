@@ -84,7 +84,7 @@ void MidiBoss::pollEvents() {
 						break;
                     case CC_CHANGE:
 						for(InstrIter it = _instruments.begin(); it != _instruments.end(); ++it) {
-							if((*it)->channel == _channel) {
+							if((*it)->ccChannel == _channel) {
 								(*it)->cc(_note, _velocity); //id and position of continous controller
 							}
 						}

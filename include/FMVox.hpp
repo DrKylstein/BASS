@@ -40,7 +40,12 @@ class FMVox: public Vox {
         void resetParameters();
     
         enum {
-            P_MIDI_CHANNEL,
+            P_NOTE_CHANNEL,
+            P_CC_CHANNEL,
+            P_AM,
+            P_FEEDBACK,
+            P_TREMOLO_DEPTH,
+            P_VIBRATO_DEPTH,
             P_MOD_ATTACK,
             P_MOD_DECAY,
             P_MOD_SUSTAIN,
@@ -61,10 +66,6 @@ class FMVox: public Vox {
             P_CARRIER_TREMOLO,
             P_CARRIER_VIBRATO,
             P_CARRIER_HOLD,
-            P_AM,
-            P_FEEDBACK,
-            P_TREMOLO_DEPTH,
-            P_VIBRATO_DEPTH,
             PARAMETER_COUNT
         };
     

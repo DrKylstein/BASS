@@ -34,6 +34,7 @@ class Pane {
     
         virtual std::pair<int, int> getPosition(int item) = 0;
         virtual int getParameterCount() = 0;
+        virtual void submitParameter(int id, int value) {}
     
         void insertAfter(Pane& p);
         void dettach();

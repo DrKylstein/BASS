@@ -23,6 +23,7 @@
 #ifndef FMPANE_HPP
 #define FMPANE_HPP
 #include "Pane.hpp"
+class FMVox;
 class FMPane : public Pane {
     public:
         FMPane(TextMode* screen);
@@ -34,10 +35,14 @@ class FMPane : public Pane {
     
         std::pair<int, int> getPosition(int item);
         int getParameterCount();
+        void submitParameter(int id, int value);
+    
+        void setVoice(FMVox* voice);
     private:
-        static const int PARAMETER_COUNT = 25;
+        static const int PARAMETER_COUNT = 26;
         static const unsigned char _positions[FMPane::PARAMETER_COUNT][2];
         TextMode* _screen;
         int _values[PARAMETER_COUNT];
+        FMVox* _voice;
 };
 #endif

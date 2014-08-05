@@ -36,7 +36,7 @@ class BeepPane : public Pane {
         std::pair<int, int> getPosition(int item);
         int getParameterCount();
     private:
-        static const int PARAMETER_COUNT = 1;
+        static const int PARAMETER_COUNT = 2;
         static const unsigned char _positions[BeepPane::PARAMETER_COUNT][2];
         TextMode* _screen;
         int _lastPos;

@@ -37,7 +37,8 @@ class BeepVox: public Vox {
 		void update(int ticks);
 	
         enum {
-            P_MIDI_CHANNEL,
+            P_NOTE_CHANNEL,
+            P_CC_CHANNEL,
             PARAMETER_COUNT
         };
         void resetParameters();

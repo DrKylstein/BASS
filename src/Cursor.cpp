@@ -71,3 +71,14 @@ void Cursor::show() {
         int 10h
     }
 }
+void Cursor::setHeight(int h) {
+    _top = _bottom - h;
+    uint8_t top = _top;
+    uint8_t bottom = _bottom;
+    _asm {
+        mov ah, 1h
+        mov ch, top
+        mov cl, bottom
+        int 10h
+    }
+}

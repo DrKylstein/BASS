@@ -158,7 +158,10 @@ void BeepVox::setParameter(int id, unsigned char value) {
     if(id >= PARAMETER_COUNT) return;
     _pane->updateParameter(id, value);
     switch(id) {
-        case P_MIDI_CHANNEL:
+        case P_CC_CHANNEL:
+            ccChannel = value;
+            break;
+        case P_NOTE_CHANNEL:
             channel = value;
             break;
     }

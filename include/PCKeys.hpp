@@ -137,6 +137,7 @@ class PCKeys {
         bool isHeld(KeySym::type);
         bool wasPressed(KeySym::type);
         bool anyKey();
+        int getDigit();
         PCKeys();
         ~PCKeys();
     private:

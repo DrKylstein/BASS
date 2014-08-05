@@ -20,18 +20,20 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
+#include "FMVox.hpp"
 #include "FMPane.hpp"
 
 static const unsigned char FMPane::_positions[FMPane::PARAMETER_COUNT][2] = {
-    {77,0},
-    {6,2},{10,2},{14,2},{18,2},{22,2},{26,2}, {30,2},{34,2},{38,2},{42,2},
-    {6,3},{10,3},{14,3},{18,3},{22,3},{26,3}, {30,3},{34,3},{38,3},{42,3}, 
-    {46,2},{50,2}, {54,2},{58,2}
+    {4,1},{4,2},{12,1},{12,2},{20,1},{20,2},
+    {28,1},{32,1},{36,1},{40,1},{44,1},{48,1},{52,1},{56,1},{60,1},{64,1},
+    {28,2},{32,2},{36,2},{40,2},{44,2},{48,2},{52,2},{56,2},{60,2},{64,2} 
 };
 
 static const char* labels[] = {
-    "Atk","Dcy","Stn","Rls","Vol","Frq","Trm","Vib","Hld", "Wav",
-    "AM","Fbk","TD","VD"
+    "Atk","Dcy","Stn","Rls","Vol","Frq","Trm","Vib","Hld", "Wav"
+};
+static const char* moreLabels[] = {
+    "Not","CC","AM","Fbk","TD","VD"
 };
 
 FMPane::FMPane(TextMode* screen) {
@@ -40,6 +42,7 @@ FMPane::FMPane(TextMode* screen) {
     for(int i = 0; i < PARAMETER_COUNT; i++) {
         _values[i] = 0;
     }
+    _voice = 0;
 }
 
 std::pair<int, int> FMPane::getPosition(int item) {
@@ -54,28 +57,42 @@ FMPane::~FMPane() {
 void FMPane::updateParameter(int id, int value) {
     if(id >= PARAMETER_COUNT) return;
     _values[id] = value;
-    _screen->print("00",0x82,_positions[id][0],_positions[id][1]+getTop());
-    _screen->print(value,0x82,_positions[id][0]+1,_positions[id][1]+getTop());
+    _screen->print("00",0x0F,_positions[id][0],_positions[id][1]+getTop());
+    _screen->print(value,0x0F,_positions[id][0]+1,_positions[id][1]+getTop());
+}
+
+void FMPane::setVoice(FMVox* voice) {
+    _voice = voice;
+}
+
+void FMPane::submitParameter(int id, int value) {
+    if(_voice != 0) 
+        _voice->setParameter(id, value);
 }
 
 void FMPane::drawStatic() {
-    _screen->box(0x07, 0, getTop(), 80, 5);
-    _screen->print("Adlib", 0x07, 1, getTop());
-    _screen->print("OP1",0x07,2,getTop()+2);
-    _screen->print("OP1",0x07,2,getTop()+3);
-    for(int i = 0; i < 14; i++) {
-        _screen->print(labels[i], 0x07, 6 + i*4, 1 + getTop());
+    _screen->hbar(0x4E, 0, getTop(), 80);
+    _screen->hbar(0x4E, 0, getBottom(), 80);
+    _screen->fill(' ', 0x4E,0, getTop()+1, 80, getBottom()-getTop()-1);
+    _screen->print("Adlib", 0x4E,  1, getTop());
+    _screen->print("Mod",   0x4E, 24, getTop()+1);
+    _screen->print("Car",   0x4E, 24, getTop()+2);
+    
+    for(int i = 0; i < 6; i++) {
+        _screen->print(moreLabels[i], 0x4E, (i/2)*8, 1 + getTop() + i%2);
+    }
+    for(int i = 0; i < 10; i++) {
+        _screen->print(labels[i], 0x4E, 28 + i*4, getTop());
     }
     for(int i = 0; i < PARAMETER_COUNT; i++) {
-        _screen->print("00",0x82,_positions[i][0],_positions[i][1]+getTop());
+        _screen->print("00",0x0F,_positions[i][0],_positions[i][1]+getTop());
     }
 }
 
 void FMPane::redrawParameters() {
     for(int id = 0; id < PARAMETER_COUNT; id++) {
-        _screen->print("00",0x82,_positions[id][0],_positions[id][1]+getTop());
-        _screen->print(_values[id],0x82,_positions[id][0]+1,_positions[id][1]+getTop());
-    }
+        updateParameter(id, _values[id]);
+    } 
 }
 
 
@@ -84,5 +101,5 @@ int FMPane::getParameterCount() {
 }
 
 int FMPane::getBottom() {
-    return getTop() + 5;
+    return getTop() + 3;
 }

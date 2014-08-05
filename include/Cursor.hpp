@@ -30,6 +30,7 @@ class Cursor {
         void moveBy(std::uint8_t x, std::uint8_t y);
         void hide();
         void show();
+        void setHeight(int h);
     private:
         std::uint8_t _x, _y;
         std::uint8_t _top, _bottom;

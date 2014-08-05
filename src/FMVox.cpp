@@ -283,10 +283,10 @@ void FMVox::resetParameters() {
     }
 }
 static const int _divisors[FMVox::PARAMETER_COUNT] = {
-    0,
-    3,3,3,3,1,3,6,6,6,
-    3,3,3,3,1,3,6,6,6,
-    6,4, 6,6, 4,4
+    0,0,6,4,6,6,
+    3,3,3,3,1,3,6,6,6,4,
+    3,3,3,3,1,3,6,6,6,4
+    
 };
 
 void FMVox::setParameter(int id, unsigned char value) {
@@ -294,7 +294,10 @@ void FMVox::setParameter(int id, unsigned char value) {
     value >>= _divisors[id];
     _panel->updateParameter(id, value);
     switch(id) {
-        case P_MIDI_CHANNEL:
+        case P_CC_CHANNEL:
+            ccChannel = value;
+            return;
+        case P_NOTE_CHANNEL:
             channel = value;
             return;
         case P_TREMOLO_DEPTH:
@@ -462,9 +465,9 @@ void FMVox::cc(unsigned char id, unsigned char value) {
             break;
     }
 }
-FMVox::FMVox(FMDriver* driver, 
-    int firstChannel, int channelCount, Pane* panel): _driver(driver), 
-    _firstChannel(firstChannel), _channelCount(channelCount), _panel(panel), _bend(0) {
+FMVox::FMVox(FMDriver* driver, int firstChannel, int channelCount, Pane* panel)
+: _driver(driver), _firstChannel(firstChannel), _channelCount(channelCount), 
+_panel(panel), _bend(0) {
 }
 FMVox::~FMVox() {
     silence();
