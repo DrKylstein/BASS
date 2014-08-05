@@ -75,11 +75,11 @@ int main() {
     
 	BeepVox speaker(&beeperCtl);
     beeperCtl.setVoice(&speaker);
-    speaker.setParameter(BeepVox::P_CC_CHANNEL, 0);
-    speaker.setParameter(BeepVox::P_NOTE_CHANNEL, 0);
-	speaker.startingNote = 0;
-	speaker.endingNote = 127;
-	speaker.transpose = 0;
+    speaker.setParameter(Vox::P_CC_CHANNEL, 0);
+    speaker.setParameter(Vox::P_NOTE_CHANNEL, 0);
+	speaker.setParameter(Vox::P_FIRST_KEY, 0);
+	speaker.setParameter(Vox::P_LAST_KEY, 127);
+	speaker.setParameter(Vox::P_TRANSPOSE, 0);
 	midi.addInstrument(&speaker);
 	
     FMDriver oplDriver;
@@ -91,9 +91,9 @@ int main() {
         adlibCtl->setVoice(adlib);
         adlib->setParameter(FMVox::P_CC_CHANNEL, 1+i);
         adlib->setParameter(FMVox::P_NOTE_CHANNEL, 1+i);
-        adlib->startingNote = 0;
-        adlib->endingNote = 127;
-        adlib->transpose = 0;
+        adlib->setParameter(Vox::P_FIRST_KEY, 0);
+        adlib->setParameter(Vox::P_LAST_KEY, 127);
+        adlib->setParameter(Vox::P_TRANSPOSE, 0);
         midi.addInstrument(adlib);
     }
     for(int i = 0; i < 3; i++) {
@@ -103,9 +103,9 @@ int main() {
         adlibCtl->setVoice(adlib);
         adlib->setParameter(FMVox::P_CC_CHANNEL, 3+i);
         adlib->setParameter(FMVox::P_NOTE_CHANNEL, 3+i);
-        adlib->startingNote = 0;
-        adlib->endingNote = 127;
-        adlib->transpose = 0;
+        adlib->setParameter(Vox::P_FIRST_KEY, 0);
+        adlib->setParameter(Vox::P_LAST_KEY, 127);
+        adlib->setParameter(Vox::P_TRANSPOSE, 0);
         midi.addInstrument(adlib);
     }
         

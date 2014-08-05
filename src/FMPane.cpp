@@ -58,8 +58,8 @@ void FMPane::updateParameter(int id, int value) {
     if(id >= PARAMETER_COUNT) return;
     _values[id] = value;
     switch(id) {
-        case 0:
-        case 1:
+        case FMVox::P_NOTE_CHANNEL:
+        case FMVox::P_CC_CHANNEL:
             value++;
     }
     _screen->print("  ",0x0F,_positions[id][0]-1,_positions[id][1]+getTop());
@@ -71,6 +71,11 @@ void FMPane::setVoice(FMVox* voice) {
 }
 
 void FMPane::submitParameter(int id, int value) {
+    switch(id) {
+        case FMVox::P_NOTE_CHANNEL:
+        case FMVox::P_CC_CHANNEL:
+            value--;
+    }
     if(_voice != 0) 
         _voice->setParameter(id, value);
 }
