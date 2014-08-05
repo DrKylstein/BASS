@@ -74,6 +74,7 @@ int main() {
     Pane* tail = &beeperCtl;
     
 	BeepVox speaker(&beeperCtl);
+    beeperCtl.setVoice(&speaker);
     speaker.setParameter(BeepVox::P_CC_CHANNEL, 0);
     speaker.setParameter(BeepVox::P_NOTE_CHANNEL, 0);
 	speaker.startingNote = 0;

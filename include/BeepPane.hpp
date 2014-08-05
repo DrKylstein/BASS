@@ -22,8 +22,8 @@
  */
 #ifndef BEEPPANE_HPP
 #define BEEPPANE_HPP
-#include "TextMode.hpp"
 #include "Pane.hpp"
+class BeepVox;
 class BeepPane : public Pane {
     public:
         BeepPane(TextMode* screen);
@@ -35,11 +35,15 @@ class BeepPane : public Pane {
     
         std::pair<int, int> getPosition(int item);
         int getParameterCount();
+        void submitParameter(int id, int value);
+    
+        void setVoice(BeepVox* voice);
     private:
         static const int PARAMETER_COUNT = 2;
         static const unsigned char _positions[BeepPane::PARAMETER_COUNT][2];
         TextMode* _screen;
         int _lastPos;
         int _values[PARAMETER_COUNT];
+        BeepVox* _voice;
 };
 #endif

@@ -20,6 +20,7 @@
  *
  *  You may contact the author at <dr.kylstein@gmail.com>
  */
+#include "BeepVox.hpp"
 #include "BeepPane.hpp"
 
 static const unsigned char BeepPane::_positions[BeepPane::PARAMETER_COUNT][2] = {
@@ -28,6 +29,7 @@ static const unsigned char BeepPane::_positions[BeepPane::PARAMETER_COUNT][2] = 
 
 BeepPane::BeepPane(TextMode* screen): _screen(screen), _lastPos(-1) {
     _clearLinks();
+    _voice = 0;
 }
 
 BeepPane::~BeepPane() {
@@ -39,6 +41,15 @@ void BeepPane::updateParameter(int id, int value) {
     _values[id] = value;
     _screen->print("00", 0x0F, _positions[id][0],   _positions[id][1]+getTop());
     _screen->print(value,0x0F, _positions[id][0]+1, _positions[id][1]+getTop());
+}
+
+void BeepPane::setVoice(BeepVox* voice) {
+    _voice = voice;
+}
+void BeepPane::submitParameter(int id, int value) {
+    if(_voice != 0) {
+        _voice->setParameter(id, value);
+    }
 }
 
 void BeepPane::drawStatic() {
