@@ -30,7 +30,7 @@ LDFLAGS = -l=DOS -fe=../$(name).exe
 CDIR = ../src
 HDIR = ../include
 
-OBJS = main.obj MPU.obj MidiBoss.obj BeepVox.obj DebugVox.obj FMVox.obj FMDriver.obj TextMode.obj FMPane.obj PCKeys.obj BeepPane.obj Pane.obj
+OBJS = main.obj MPU.obj MidiBoss.obj BeepVox.obj DebugVox.obj FMVox.obj FMDriver.obj TextMode.obj FMPane.obj PCKeys.obj BeepPane.obj Pane.obj Timer.obj
 lnk_dependencies = makefile
 
 

@@ -33,6 +33,7 @@
 #include "FMPane.hpp"
 #include "PCKeys.hpp"
 #include "BeepPane.hpp"
+#include "Timer.hpp"
 
 static const char* buttons[10] = {
     "Help  ",
@@ -47,9 +48,8 @@ static const char* buttons[10] = {
     "Exit  "
 };
 
-
-
 int main() {
+    Timer timer;
 	MPU mpu401;
 	MidiBoss midi;
 	midi.init(&mpu401);
@@ -149,6 +149,13 @@ int main() {
     bool screenSaverOn = false;
     int editValue = 0;
     
+    Timer::tics_t lastTics = timer.getTics();
+    Timer::tics_t interval = 0;
+    int scrsavI = 0;
+    
+    int matrixX = 0;
+    int matrixY = 0;
+    
 	while(true) {
         if(pckey.wasPressed(KeySym::f10)) break;
 		midi.pollEvents();
@@ -156,8 +163,37 @@ int main() {
             screenSaverOn =! screenSaverOn;
             if(screenSaverOn) {
                 screenSaver.activate();
+                lastTics = timer.getTics();
             } else {
                 screen.activate();
+            }
+        }
+        
+        if(screenSaverOn) {
+            interval = timer.getTics() - lastTics;
+            if(interval > Timer::SECOND/12) {
+                if(scrsavI > 2000) {
+                    screenSaver.fill(' ', 0x07, 0, 0, 80, 25);
+                    scrsavI = 0;
+                }
+                int random = matrixX+lastTics+scrsavI;
+                if(matrixY > 2) {
+                    screenSaver.print((char)(random++), 0x08, matrixX, matrixY-3);
+                }
+                if(matrixY > 1) {
+                    screenSaver.print((char)(random++), 0x02, matrixX, matrixY-2);
+                }
+                if(matrixY > 0) {
+                    screenSaver.print((char)(random++), 0x0A, matrixX, matrixY-1);
+                }
+                screenSaver.print((char)(random), 0x0F, matrixX, matrixY);
+                scrsavI++;
+                matrixY++;
+                if(matrixY == 25 || matrixY == random % 25) {
+                    matrixY = 0;
+                    matrixX = random % 80;
+                }
+                lastTics = timer.getTics();
             }
         }
         if(!editMode) {
@@ -241,6 +277,7 @@ int main() {
         
 
 	}	
+    screen.activate();
     screen.moveCursorTo(79,24);
 	return 0;
 }
