@@ -57,6 +57,11 @@ FMPane::~FMPane() {
 void FMPane::updateParameter(int id, int value) {
     if(id >= PARAMETER_COUNT) return;
     _values[id] = value;
+    switch(id) {
+        case 0:
+        case 1:
+            value++;
+    }
     _screen->print("00",0x0F,_positions[id][0],_positions[id][1]+getTop());
     _screen->print(value,0x0F,_positions[id][0]+1,_positions[id][1]+getTop());
 }
