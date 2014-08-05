@@ -229,5 +229,6 @@ int main() {
         
 
 	}	
+    screen.moveCursorTo(79,24);
 	return 0;
 }

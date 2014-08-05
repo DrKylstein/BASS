@@ -25,22 +25,9 @@
 #include <cassert>
 using std::uint16_t;
 using std::uint8_t;
-
 using std::strlen;
 
-bool TextMode::_exists = false;
-
-TextMode::TextMode() {
-    assert(!_exists);
-    _exists = true;
-    //turn off blinking
-    REGS inputRegisters, resultRegisters;
-    inputRegisters.x.ax = 0x1003;
-    inputRegisters.h.bl = 0;
-    int86(0x10, &inputRegisters, &resultRegisters);
-
-    mScreen = (uint16_t far*)MK_FP(0xB800,0);
-    
+TextMode::TextMode() {    
     //setup cursor
     uint8_t x, y;
     uint8_t top, bottom;
@@ -57,15 +44,6 @@ TextMode::TextMode() {
     _y = y;
     _top = top;
     _bottom = bottom;
-}
-TextMode::TextMode(TextMode&) {
-    assert(true);
-}
-TextMode::~TextMode() {
-    //reset video mode
-    REGS inputRegisters, resultRegisters;
-    inputRegisters.x.ax = 0x0003;
-    int86(0x10, &inputRegisters, &resultRegisters);
 }
 
 void _cursorAt(uint8_t x, uint8_t y) {
@@ -155,13 +133,6 @@ void TextMode::box(uint8_t attrib, int x, int y, int width, int height) {
             if(lx != 1 || ly != 1) {
                 print(BOX_CHARS[ly][lx], attrib, dx, dy);
             }
-        }
-    }
-}
-void TextMode::setAttrib(uint8_t attrib, int x, int y, int width, int height) {
-    for(int dx = 0; dx < width; dx++) {
-        for(int dy = 0; dy < height; dy++) {
-            mScreen[(y+dy)*80 + x + dx] |= ((uint16_t)attrib << 8);
         }
     }
 }

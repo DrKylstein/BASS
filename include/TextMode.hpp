@@ -6,7 +6,6 @@
 class TextMode {
     public:
         TextMode();
-        ~TextMode();
         void fill(char c, std::uint8_t attrib, int x, int y, int width, int height);
         void print(char c, std::uint8_t attrib, int x, int y);
         std::uint16_t get(int x, int y);
@@ -15,7 +14,6 @@ class TextMode {
         void printHex(int num, std::uint8_t attrib, int x, int y);
         void box(std::uint8_t attrib, int x, int y, int width, int height);
         void hbar(std::uint8_t attrib, int x, int y, int width);
-        void setAttrib(std::uint8_t attrib, int x, int y, int width, int height);
     
         void moveCursorTo(std::uint8_t x, std::uint8_t y);
         void moveCursorBy(std::uint8_t x, std::uint8_t y);
@@ -24,9 +22,6 @@ class TextMode {
         void setCursorHeight(int h);
 
     private:
-        TextMode(TextMode&);
-        std::uint16_t far* mScreen;
-        static bool _exists;
         std::uint8_t _x, _y;
         std::uint8_t _top, _bottom;
 };
