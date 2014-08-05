@@ -23,6 +23,8 @@
 #include "TextMode.hpp"
 #include <dos.h>
 #include <cassert>
+using std::uint16_t;
+using std::uint8_t;
 
 using std::strlen;
 
@@ -38,6 +40,23 @@ TextMode::TextMode() {
     int86(0x10, &inputRegisters, &resultRegisters);
 
     mScreen = (uint16_t far*)MK_FP(0xB800,0);
+    
+    //setup cursor
+    uint8_t x, y;
+    uint8_t top, bottom;
+    _asm {
+        mov ah, 03h
+        mov bh, 00h
+        int 10h
+        mov x, dl
+        mov y, dh
+        mov top, ch
+        mov bottom, cl
+    }
+    _x = x;
+    _y = y;
+    _top = top;
+    _bottom = bottom;
 }
 TextMode::TextMode(TextMode&) {
     assert(true);
@@ -48,11 +67,37 @@ TextMode::~TextMode() {
     inputRegisters.x.ax = 0x0003;
     int86(0x10, &inputRegisters, &resultRegisters);
 }
+
+void _cursorAt(uint8_t x, uint8_t y) {
+    _asm {
+        mov ah, 2
+        mov bh, 0
+        mov dl, x
+        mov dh, y
+        int 10h
+    }
+}
+
+
 void TextMode::print(char c, uint8_t attrib, int x, int y) {
-    mScreen[y*80 + x] = c | ((uint16_t)attrib << 8);
+    //mScreen[y*80 + x] = c | ((uint16_t)attrib << 8);
+    _cursorAt(x,y);
+    REGS inputRegisters, resultRegisters;
+    inputRegisters.h.ah = 0x09; //function
+    inputRegisters.h.bh = 0; //page
+    inputRegisters.h.al = c;
+    inputRegisters.h.bl = attrib;
+    inputRegisters.x.cx = 1; //repeat
+    int86(0x10, &inputRegisters, &resultRegisters);
+    _cursorAt(_x,_y);
 }
 uint16_t TextMode::get(int x, int y) {
-    return mScreen[y*80 + x];
+    _cursorAt(x,y);
+    REGS inputRegisters, resultRegisters;
+    inputRegisters.h.ah = 0x08; //function
+    inputRegisters.h.bh = 0; //page
+    int86(0x10, &inputRegisters, &resultRegisters);
+    return (uint16_t)resultRegisters.h.ah << 8 | (uint16_t)resultRegisters.h.al;
 }
 
 void TextMode::print(std::string str, uint8_t attrib, int x, int y) {
@@ -144,5 +189,51 @@ void TextMode::fill(char c, uint8_t attrib, int x, int y, int width, int height)
         for(int j = 0; j < width; j++) {
             print(c, attrib, x+j, y+i);
         }
+    }
+}
+
+
+
+void TextMode::moveCursorTo(uint8_t x, uint8_t y) {
+    _x = x;
+    _y = y;
+    _asm {
+        mov ah, 2
+        mov bh, 0
+        mov dl, x
+        mov dh, y
+        int 10h
+    }
+}
+void TextMode::moveCursorBy(uint8_t x, uint8_t y) {
+    moveCursorTo(_x+x,_y+y);
+}
+void TextMode::hideCursor() {
+    _asm {
+        mov ah, 1h
+        mov ch, 00100000b
+        mov cl, 0
+        int 10h
+    }
+}
+void TextMode::showCursor() {
+    uint8_t top = _top;
+    uint8_t bottom = _bottom;
+    _asm {
+        mov ah, 1h
+        mov ch, top
+        mov cl, bottom
+        int 10h
+    }
+}
+void TextMode::setCursorHeight(int h) {
+    _top = _bottom - h;
+    uint8_t top = _top;
+    uint8_t bottom = _bottom;
+    _asm {
+        mov ah, 1h
+        mov ch, top
+        mov cl, bottom
+        int 10h
     }
 }

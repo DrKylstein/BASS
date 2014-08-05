@@ -33,7 +33,6 @@
 #include "FMPane.hpp"
 #include "PCKeys.hpp"
 #include "BeepPane.hpp"
-#include "Cursor.hpp"
 
 static const char* buttons[10] = {
     "Help  ",
@@ -56,7 +55,6 @@ int main() {
 	midi.init(&mpu401);
 	
     TextMode screen;
-    Cursor cursor;
     
     BeepPane beeperCtl(&screen);
     
@@ -131,7 +129,7 @@ int main() {
     
     Pane* currentPane = head;
     int pos = 0;
-    cursor.moveTo(currentPane->getPosition(pos).first, 
+    screen.moveCursorTo(currentPane->getPosition(pos).first, 
         currentPane->getPosition(pos).second);
     
     bool oplDebug = false;
@@ -172,7 +170,7 @@ int main() {
             !pckey.isHeld(KeySym::right_shift))) {
                 if(pos < currentPane->getParameterCount()-1) {
                     pos++;
-                    cursor.moveTo(currentPane->getPosition(pos).first, 
+                    screen.moveCursorTo(currentPane->getPosition(pos).first, 
                         currentPane->getPosition(pos).second);
                 }
             }
@@ -181,7 +179,7 @@ int main() {
             pckey.isHeld(KeySym::right_shift)))) {
                 if(pos > 0) {
                     pos--;
-                    cursor.moveTo(currentPane->getPosition(pos).first, 
+                    screen.moveCursorTo(currentPane->getPosition(pos).first, 
                         currentPane->getPosition(pos).second);
                 }
             }
@@ -190,7 +188,7 @@ int main() {
                 if(currentPane->getNext()) {
                     currentPane = currentPane->getNext();
                     pos = 0;
-                    cursor.moveTo(currentPane->getPosition(pos).first, 
+                    screen.moveCursorTo(currentPane->getPosition(pos).first, 
                         currentPane->getPosition(pos).second);
                 }
             }
@@ -198,7 +196,7 @@ int main() {
                 if(currentPane->getPrevious()) {
                     currentPane = currentPane->getPrevious();
                     pos = 0;
-                    cursor.moveTo(currentPane->getPosition(pos).first, 
+                    screen.moveCursorTo(currentPane->getPosition(pos).first, 
                         currentPane->getPosition(pos).second);
                 }
             }
@@ -207,14 +205,14 @@ int main() {
                 editValue = 0;
                 screen.print(">",0x07,0,23);
                 screen.print(editValue, 0x07, 4, 23);
-                cursor.setHeight(7);
+                screen.setCursorHeight(7);
             }
         } else {
             if(pckey.wasPressed(KeySym::enter)) {
                 editMode = false;
                 screen.fill(' ', 0x07, 0, 23, 5, 1);
                 currentPane->submitParameter(pos, editValue);
-                cursor.setHeight(1);
+                screen.setCursorHeight(1);
             } else if(pckey.wasPressed(KeySym::backspace)) {
                     editValue /= 10;
                     screen.fill(' ', 0x07, 1, 23, 4, 1);

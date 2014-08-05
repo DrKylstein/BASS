@@ -2,25 +2,32 @@
 #define TEXTMODE_HPP
 #include <cstdint>
 #include <string>
-using std::uint16_t;
-using std::uint8_t;
 
 class TextMode {
     public:
         TextMode();
         ~TextMode();
-        void fill(char c, uint8_t attrib, int x, int y, int width, int height);
-        void print(char c, uint8_t attrib, int x, int y);
-        uint16_t get(int x, int y);
-        void print(std::string str, uint8_t attrib, int x, int y);
-        void print(int num, uint8_t attrib, int x, int y);
-        void printHex(int num, uint8_t attrib, int x, int y);
-        void box(uint8_t attrib, int x, int y, int width, int height);
-        void hbar(uint8_t attrib, int x, int y, int width);
-        void setAttrib(uint8_t attrib, int x, int y, int width, int height);
+        void fill(char c, std::uint8_t attrib, int x, int y, int width, int height);
+        void print(char c, std::uint8_t attrib, int x, int y);
+        std::uint16_t get(int x, int y);
+        void print(std::string str, std::uint8_t attrib, int x, int y);
+        void print(int num, std::uint8_t attrib, int x, int y);
+        void printHex(int num, std::uint8_t attrib, int x, int y);
+        void box(std::uint8_t attrib, int x, int y, int width, int height);
+        void hbar(std::uint8_t attrib, int x, int y, int width);
+        void setAttrib(std::uint8_t attrib, int x, int y, int width, int height);
+    
+        void moveCursorTo(std::uint8_t x, std::uint8_t y);
+        void moveCursorBy(std::uint8_t x, std::uint8_t y);
+        void hideCursor();
+        void showCursor();
+        void setCursorHeight(int h);
+
     private:
         TextMode(TextMode&);
-        uint16_t far* mScreen;
+        std::uint16_t far* mScreen;
         static bool _exists;
+        std::uint8_t _x, _y;
+        std::uint8_t _top, _bottom;
 };
 #endif
