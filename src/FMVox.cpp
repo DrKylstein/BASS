@@ -291,7 +291,6 @@ static const int _divisors[FMVox::PARAMETER_COUNT] = {
 
 void FMVox::setParameter(int id, unsigned char value) {
     if(id >= PARAMETER_COUNT) return;
-    value >>= _divisors[id];
     _panel->updateParameter(id, value);
     switch(id) {
         case P_CC_CHANNEL:
@@ -385,81 +384,81 @@ void FMVox::setParameter(int id, unsigned char value) {
 void FMVox::cc(unsigned char id, unsigned char value) {
     switch(id) {
         case 20:
-            setParameter(P_MOD_ATTACK, value);
+            setParameter(P_MOD_ATTACK, value >> _divisors[P_MOD_ATTACK]);
             break;
         case 21:
-            setParameter(P_MOD_DECAY, value);
+            setParameter(P_MOD_DECAY, value >> _divisors[P_MOD_DECAY]);
             break;
         case 22:
-            setParameter(P_MOD_SUSTAIN, value);
+            setParameter(P_MOD_SUSTAIN, value >> _divisors[P_MOD_SUSTAIN]);
             break;
         case 23:
-            setParameter(P_MOD_RELEASE, value);
+            setParameter(P_MOD_RELEASE, value >> _divisors[P_MOD_RELEASE]);
             break;
         case 3:
-            setParameter(P_MOD_VOLUME, value);
+            setParameter(P_MOD_VOLUME, value >> _divisors[P_MOD_VOLUME]);
             break;
         case 9:
-            setParameter(P_MOD_FREQMULT, value);
+            setParameter(P_MOD_FREQMULT, value >> _divisors[P_MOD_FREQMULT]);
             break;
         case 28:
-            setParameter(P_MOD_TREMOLO, value);
+            setParameter(P_MOD_TREMOLO, value >> _divisors[P_MOD_TREMOLO]);
             break;
         case 29:
-            setParameter(P_MOD_VIBRATO, value);
+            setParameter(P_MOD_VIBRATO, value >> _divisors[P_MOD_VIBRATO]);
             break;
         case 30:
-            setParameter(P_MOD_HOLD, value);
+            setParameter(P_MOD_HOLD, value >> _divisors[P_MOD_HOLD]);
             break;
 
         
         case 24:
-            setParameter(P_CARRIER_ATTACK, value);
+            setParameter(P_CARRIER_ATTACK, value >> _divisors[P_CARRIER_ATTACK]);
             break;
         case 25:
-            setParameter(P_CARRIER_DECAY, value);
+            setParameter(P_CARRIER_DECAY, value >> _divisors[P_CARRIER_DECAY]);
             break;
         case 26:
-            setParameter(P_CARRIER_SUSTAIN, value);
+            setParameter(P_CARRIER_SUSTAIN, value >> _divisors[P_CARRIER_SUSTAIN]);
             break;
         case 27:
-            setParameter(P_CARRIER_RELEASE, value);
+            setParameter(P_CARRIER_RELEASE, value >> _divisors[P_CARRIER_RELEASE]);
             break;
         case 16:
-            setParameter(P_CARRIER_VOLUME, value);
+            setParameter(P_CARRIER_VOLUME, value >> _divisors[P_CARRIER_VOLUME]);
             break;
         case 17:
-            setParameter(P_CARRIER_FREQMULT, value);
+            setParameter(P_CARRIER_FREQMULT, value >> _divisors[P_CARRIER_FREQMULT]);
             break;
         case 35:
-            setParameter(P_CARRIER_TREMOLO, value);
+            setParameter(P_CARRIER_TREMOLO, value >> _divisors[P_CARRIER_TREMOLO]);
             break;
         case 41:
-            setParameter(P_CARRIER_VIBRATO, value);
+            setParameter(P_CARRIER_VIBRATO, value >> _divisors[P_CARRIER_VIBRATO]);
             break;
         case 46:
-            setParameter(P_CARRIER_HOLD, value);
+            setParameter(P_CARRIER_HOLD, value >> _divisors[P_CARRIER_HOLD]);
             break;
 
         
         case 47:
-            setParameter(P_AM, value);
+            setParameter(P_AM, value >> _divisors[P_AM]);
             break;
         case 19:
-            setParameter(P_FEEDBACK, value);
+            setParameter(P_FEEDBACK, value >> _divisors[P_FEEDBACK]);
             break;
         case 75:
-            setParameter(P_TREMOLO_DEPTH, value);
+            setParameter(P_TREMOLO_DEPTH, value >> _divisors[P_TREMOLO_DEPTH]);
             break;
         case 76:
-            setParameter(P_VIBRATO_DEPTH, value);
+            setParameter(P_VIBRATO_DEPTH, value >> _divisors[P_VIBRATO_DEPTH]);
             break;
         
         case 14:
-            setParameter(P_MOD_WAVE, value);
+            setParameter(P_MOD_WAVE, value >> _divisors[P_MOD_WAVE]);
             break;
         case 18:
-            setParameter(P_CARRIER_WAVE, value);
+            setParameter(P_CARRIER_WAVE, value >> _divisors[P_CARRIER_WAVE]);
             break;
         default:
             break;
