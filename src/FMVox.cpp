@@ -283,22 +283,17 @@ void FMVox::resetParameters() {
     }
 }
 static const int _divisors[FMVox::PARAMETER_COUNT] = {
-    0,0,6,4,6,6,
+    0,0,0,0,0,6,4,6,6,
     3,3,3,3,1,3,6,6,6,4,
     3,3,3,3,1,3,6,6,6,4
     
 };
 
-void FMVox::setParameter(int id, unsigned char value) {
+void FMVox::setParameter(int id, int value) {
     if(id >= PARAMETER_COUNT) return;
     _panel->updateParameter(id, value);
+    setCommonParameter(id, value);
     switch(id) {
-        case P_CC_CHANNEL:
-            ccChannel = value;
-            return;
-        case P_NOTE_CHANNEL:
-            channel = value;
-            return;
         case P_TREMOLO_DEPTH:
             _driver->setTremoloDepth(value);
             return;

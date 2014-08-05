@@ -39,8 +39,9 @@ class BeepPane : public Pane {
     
         void setVoice(BeepVox* voice);
     private:
-        static const int PARAMETER_COUNT = 2;
+        static const int PARAMETER_COUNT = 5;
         static const unsigned char _positions[BeepPane::PARAMETER_COUNT][2];
+        static const char* BeepPane::_labels[BeepPane::PARAMETER_COUNT];
         TextMode* _screen;
         int _lastPos;
         int _values[PARAMETER_COUNT];

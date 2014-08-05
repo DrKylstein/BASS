@@ -24,7 +24,15 @@
 #include "BeepPane.hpp"
 
 static const unsigned char BeepPane::_positions[BeepPane::PARAMETER_COUNT][2] = {
-    {4,1},{10,1}
+    {4,1},{11,1},{18, 1},{25, 1},{32, 1}
+};
+
+static const char* BeepPane::_labels[BeepPane::PARAMETER_COUNT] = {
+    "Not",
+    "CC",
+    "+",
+    "1st",
+    "Lst"
 };
 
 BeepPane::BeepPane(TextMode* screen): _screen(screen), _lastPos(-1) {
@@ -40,12 +48,12 @@ void BeepPane::updateParameter(int id, int value) {
     if(id >= PARAMETER_COUNT) return;
     _values[id] = value;
     switch(id) {
-        case 0:
-        case 1:
+        case BeepVox::P_NOTE_CHANNEL:
+        case BeepVox::P_CC_CHANNEL:
             value++;
     }
-    _screen->print("00", 0x0F, _positions[id][0],   _positions[id][1]+getTop());
-    _screen->print(value,0x0F, _positions[id][0]+1, _positions[id][1]+getTop());
+    _screen->print("   ", 0x0F, _positions[id][0]-1,   _positions[id][1]+getTop());
+    _screen->print(value, 0x0F, _positions[id][0]+1, _positions[id][1]+getTop());
 }
 
 void BeepPane::setVoice(BeepVox* voice) {
@@ -63,8 +71,9 @@ void BeepPane::drawStatic() {
     _screen->hbar(0x2E, 0, getBottom(), 80);
     _screen->fill(' ', 0x2E,0, getTop()+1, 80, getBottom()-getTop()-1);
     _screen->print("Beeper", 0x2E, 1,     getTop());
-    _screen->print("Not",    0x2E, 0, 1 + getTop());
-    _screen->print("CC",     0x2E, 7, 1 + getTop());
+    for(int i =0; i < PARAMETER_COUNT; i++) {
+        _screen->print(_labels[i], 0x2E, i*7, 1 + getTop());
+    }
 }
 
 void BeepPane::redrawParameters() {
@@ -74,7 +83,7 @@ void BeepPane::redrawParameters() {
 }
 
 int BeepPane::getParameterCount() {
-    return 2;
+    return PARAMETER_COUNT;
 }
 int BeepPane::getBottom() {
     return getTop() + 2;

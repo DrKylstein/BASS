@@ -36,13 +36,11 @@ class FMVox: public Vox {
 		void pressureChangeNote(unsigned char note, unsigned char pressure);
 		void silence();
         void cc(unsigned char id, unsigned char value);
-        void setParameter(int id, unsigned char value);
+        void setParameter(int id, int value);
         void resetParameters();
     
         enum {
-            P_NOTE_CHANNEL,
-            P_CC_CHANNEL,
-            P_AM,
+            P_AM = P_CUSTOM,
             P_FEEDBACK,
             P_TREMOLO_DEPTH,
             P_VIBRATO_DEPTH,

@@ -249,7 +249,7 @@ int main() {
                         currentPane->getPosition(pos).second);
                 }
             }
-            if(pckey.wasPressed(KeySym::f2)) {
+            if(pckey.wasPressed(KeySym::f2) || pckey.wasPressed(KeySym::enter)) {
                 editMode = true;
                 editValue = 0;
                 screen.print(">",0x07,0,23);
@@ -263,14 +263,18 @@ int main() {
                 currentPane->submitParameter(pos, editValue);
                 screen.setCursorHeight(1);
             } else if(pckey.wasPressed(KeySym::backspace)) {
-                    editValue /= 10;
-                    screen.fill(' ', 0x07, 1, 23, 4, 1);
-                    screen.print(editValue, 0x07, 4, 23);
-            } else if(editValue < 127) {
+                editValue /= 10;
+                screen.fill(' ', 0x07, 1, 23, 4, 1);
+                screen.print(editValue, 0x07, 4, 23);
+            } else if(pckey.wasPressed(KeySym::minus)) {
+                editValue *= -1;
+                screen.fill(' ', 0x07, 1, 23, 4, 1);
+                screen.print(editValue, 0x07, 4, 23);
+            } else {
                 int digit = pckey.getDigit();
                 if(digit != -1 && (editValue*10 + digit) < 128) {
                     editValue *= 10;
-                    editValue += digit;
+                    editValue += digit * (editValue < 0?-1:1);
                     screen.print(editValue, 0x07, 4, 23);            
                 }
             }

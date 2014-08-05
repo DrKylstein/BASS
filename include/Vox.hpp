@@ -35,8 +35,21 @@ class Vox {
         virtual void programChange(int program) {};
             
         virtual void resetParameters() {};
-        virtual void setParameter(int id, unsigned char value) {};
+        virtual void setParameter(int id, int value) {};
             
-		unsigned char channel, ccChannel, startingNote, endingNote, transpose;
+        enum {
+            P_NOTE_CHANNEL,
+            P_CC_CHANNEL,
+            P_TRANSPOSE,
+            P_FIRST_KEY,
+            P_LAST_KEY,
+            P_CUSTOM
+        };
+
+            
+		unsigned char channel, ccChannel, startingNote, endingNote;
+        int transpose;
+    protected:
+        void setCommonParameter(int id, unsigned char value);
 };
 #endif

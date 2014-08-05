@@ -154,17 +154,10 @@ void BeepVox::resetParameters() {
         _pane->updateParameter(i, 0);
     }
 }
-void BeepVox::setParameter(int id, unsigned char value) {
+void BeepVox::setParameter(int id, int value) {
     if(id >= PARAMETER_COUNT) return;
     _pane->updateParameter(id, value);
-    switch(id) {
-        case P_CC_CHANNEL:
-            ccChannel = value;
-            break;
-        case P_NOTE_CHANNEL:
-            channel = value;
-            break;
-    }
+    setCommonParameter(id, value);
 }
 
 

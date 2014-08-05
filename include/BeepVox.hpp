@@ -37,12 +37,10 @@ class BeepVox: public Vox {
 		void update(int ticks);
 	
         enum {
-            P_NOTE_CHANNEL,
-            P_CC_CHANNEL,
-            PARAMETER_COUNT
+            PARAMETER_COUNT = P_CUSTOM
         };
         void resetParameters();
-        void setParameter(int id, unsigned char value);
+        void setParameter(int id, int value);
         
 		BeepVox(BeepPane* pane);
 		~BeepVox();

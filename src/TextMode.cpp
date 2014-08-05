@@ -81,11 +81,14 @@ void TextMode::print(std::string str, uint8_t attrib, int x, int y) {
     }
 }
 void TextMode::print(int num, uint8_t attrib, int x, int y) {
+    bool negative = num < 0;
+    if(negative) num *= -1;
     do {
         print((char)((num % 10) + '0'), attrib, x, y);
         num /= 10;
         x--;
     } while(num);
+    if(negative) print('-', attrib, x, y);
 }
 void TextMode::printHex(int num, uint8_t attrib, int x, int y) {
     do {

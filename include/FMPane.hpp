@@ -39,7 +39,7 @@ class FMPane : public Pane {
     
         void setVoice(FMVox* voice);
     private:
-        static const int PARAMETER_COUNT = 26;
+        static const int PARAMETER_COUNT = 29;
         static const unsigned char _positions[FMPane::PARAMETER_COUNT][2];
         TextMode* _screen;
         int _values[PARAMETER_COUNT];
