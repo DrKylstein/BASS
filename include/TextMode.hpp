@@ -5,7 +5,7 @@
 
 class TextMode {
     public:
-        TextMode();
+        TextMode(std::uint8_t page);
         void fill(char c, std::uint8_t attrib, int x, int y, int width, int height);
         void print(char c, std::uint8_t attrib, int x, int y);
         std::uint16_t get(int x, int y);
@@ -20,9 +20,13 @@ class TextMode {
         void hideCursor();
         void showCursor();
         void setCursorHeight(int h);
+    
+        void activate();
 
     private:
+        void _cursorAt(std::uint8_t x, std::uint8_t y);
         std::uint8_t _x, _y;
         std::uint8_t _top, _bottom;
+        int _page;
 };
 #endif

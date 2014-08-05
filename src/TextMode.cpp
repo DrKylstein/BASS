@@ -27,13 +27,13 @@ using std::uint16_t;
 using std::uint8_t;
 using std::strlen;
 
-TextMode::TextMode() {    
+TextMode::TextMode(uint8_t page): _page(page) {
     //setup cursor
     uint8_t x, y;
     uint8_t top, bottom;
     _asm {
         mov ah, 03h
-        mov bh, 00h
+        mov bh, page
         int 10h
         mov x, dl
         mov y, dh
@@ -45,24 +45,20 @@ TextMode::TextMode() {
     _top = top;
     _bottom = bottom;
 }
-
-void _cursorAt(uint8_t x, uint8_t y) {
-    _asm {
-        mov ah, 2
-        mov bh, 0
-        mov dl, x
-        mov dh, y
-        int 10h
-    }
+void TextMode::_cursorAt(uint8_t x, uint8_t y) {
+    REGS inputRegisters, resultRegisters;
+    inputRegisters.h.ah = 0x02;
+    inputRegisters.h.bh = _page;
+    inputRegisters.h.dl = x;
+    inputRegisters.h.dh = y;
+    int86(0x10, &inputRegisters, &resultRegisters);
 }
-
-
 void TextMode::print(char c, uint8_t attrib, int x, int y) {
     //mScreen[y*80 + x] = c | ((uint16_t)attrib << 8);
     _cursorAt(x,y);
     REGS inputRegisters, resultRegisters;
     inputRegisters.h.ah = 0x09; //function
-    inputRegisters.h.bh = 0; //page
+    inputRegisters.h.bh = _page;
     inputRegisters.h.al = c;
     inputRegisters.h.bl = attrib;
     inputRegisters.x.cx = 1; //repeat
@@ -73,7 +69,7 @@ uint16_t TextMode::get(int x, int y) {
     _cursorAt(x,y);
     REGS inputRegisters, resultRegisters;
     inputRegisters.h.ah = 0x08; //function
-    inputRegisters.h.bh = 0; //page
+    inputRegisters.h.bh = _page;
     int86(0x10, &inputRegisters, &resultRegisters);
     return (uint16_t)resultRegisters.h.ah << 8 | (uint16_t)resultRegisters.h.al;
 }
@@ -164,17 +160,10 @@ void TextMode::fill(char c, uint8_t attrib, int x, int y, int width, int height)
 }
 
 
-
 void TextMode::moveCursorTo(uint8_t x, uint8_t y) {
     _x = x;
     _y = y;
-    _asm {
-        mov ah, 2
-        mov bh, 0
-        mov dl, x
-        mov dh, y
-        int 10h
-    }
+    _cursorAt(_x, _y);
 }
 void TextMode::moveCursorBy(uint8_t x, uint8_t y) {
     moveCursorTo(_x+x,_y+y);
@@ -207,4 +196,12 @@ void TextMode::setCursorHeight(int h) {
         mov cl, bottom
         int 10h
     }
+}
+
+
+void TextMode::activate() {
+    REGS inputRegisters, resultRegisters;
+    inputRegisters.h.ah = 0x05; //function
+    inputRegisters.h.al = _page;
+    int86(0x10, &inputRegisters, &resultRegisters);
 }

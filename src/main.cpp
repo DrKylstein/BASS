@@ -42,7 +42,7 @@ static const char* buttons[10] = {
     "      ",
     "      ",
     "      ",
-    "      ",
+    "ScrnSv",
     "FM Dbg",
     "Exit  "
 };
@@ -54,8 +54,20 @@ int main() {
 	MidiBoss midi;
 	midi.init(&mpu401);
 	
-    TextMode screen;
+    TextMode screen(0);
     
+    TextMode debugPage(1);
+    debugPage.fill(' ', 0x07, 0, 0, 80, 25);
+    for(int i = 0; i <= 0xF; i++) {
+        debugPage.printHex(i, 0x70, 2 + i*3, 0);
+    }
+    for(int i = 0; i <= 0xF; i++) {
+        debugPage.printHex(i, 0x70, 0, 1+i);
+    }
+    
+    TextMode screenSaver(2);
+    screenSaver.fill(' ', 0x07, 0, 0, 80, 25);
+
     BeepPane beeperCtl(&screen);
     
     Pane* head = &beeperCtl;
@@ -134,33 +146,33 @@ int main() {
     
     bool oplDebug = false;
     bool editMode = false;
+    bool screenSaverOn = false;
     int editValue = 0;
     
 	while(true) {
         if(pckey.wasPressed(KeySym::f10)) break;
 		midi.pollEvents();
+        if(pckey.wasPressed(KeySym::f8)) {
+            screenSaverOn =! screenSaverOn;
+            if(screenSaverOn) {
+                screenSaver.activate();
+            } else {
+                screen.activate();
+            }
+        }
         if(!editMode) {
             if(pckey.wasPressed(KeySym::f9)) {
                 oplDebug = !oplDebug;
                 if(oplDebug) {
-                    for(int i = 0; i <= 0xF; i++) {
-                        screen.printHex(i, 0x70, 2 + i*3, 7);
-                    }
-                    for(int i = 0; i <= 0xF; i++) {
-                        screen.printHex(i, 0x70, 0, 8+i);
-                    }
+                    debugPage.activate();
                 } else {
-                    screen.fill(' ',0x07,0,0,80,24);
-                    for (Pane* p = head; p != 0; p = p->getNext()) {
-                        p->drawStatic();
-                        p->redrawParameters();
-                    }
+                    screen.activate();
                 }
             }
             if(oplDebug) {
                 for(int i = 0; i < 0xF6; i++) {
-                    screen.print("0", 0x07, 2 + (i % 16)*3, i/16 + 8);
-                    screen.printHex(oplDriver.getReg(i), 0x07, 3 + (i % 16)*3, i/16 + 8);
+                    debugPage.print("0", 0x07, 2 + (i % 16)*3, i/16 + 1);
+                    debugPage.printHex(oplDriver.getReg(i), 0x07, 3 + (i % 16)*3, i/16 + 1);
                 }
             }
             
