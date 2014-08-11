@@ -24,18 +24,21 @@
 #define VOX_HPP
 class Vox {
 	public:
+        //abstract
 		virtual void playNote(unsigned char note, unsigned char velocity) = 0;
 		virtual void stopNote(unsigned char note) = 0;
 		virtual void silence() = 0;
+		virtual void pitchBend(signed int offset) = 0;
     
-		virtual void pitchBend(signed int offset) {};
+        //abstract optional
 		virtual void pressureChangeNote(unsigned char note, unsigned char pressure) {};
-        virtual void cc(unsigned char id, unsigned char value) {};
 		virtual void update(int ticks) {};
-        virtual void programChange(int program) {};
-            
-        virtual void resetParameters() {};
-        virtual void setParameter(int id, int value) {};
+        
+        //concrete
+        int getParameterMax(int id);
+        int getParameterMin(int id);
+        void setParameter(int id, int value);
+        int getParameter(int id);
             
         enum {
             P_NOTE_CHANNEL,
@@ -46,10 +49,16 @@ class Vox {
             P_CUSTOM
         };
 
-            
-		unsigned char channel, ccChannel, startingNote, endingNote;
-        int transpose;
     protected:
-        void setCommonParameter(int id, unsigned char value);
+        virtual int getCustomParameterMax(int id) = 0;
+        virtual int getCustomParameterMin(int id) = 0;
+        virtual void updateParameterDisplay(int id, int value) = 0;
+        virtual void setCustomParameter(int id, int value) = 0;
+        virtual int getCustomParameter(int id) = 0;
+    
+    private:
+        int constrain(int v, int l, int h);
+        unsigned char channel, ccChannel, startingNote, endingNote;
+        int transpose;
 };
 #endif

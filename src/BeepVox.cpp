@@ -149,15 +149,20 @@ void BeepVox::update(int ticks) {
 	_speaker.setTimer(_timingTable[( (_currentNote + 12) << 4) + (_currentBend >> 8) + _tremoloStep - 1]);
 }
 
-void BeepVox::resetParameters() {
-    for(int i = 0; i < PARAMETER_COUNT; i++) {
-        _pane->updateParameter(i, 0);
-    }
+int BeepVox::getCustomParameterMax(int id) {
+    return 0;
 }
-void BeepVox::setParameter(int id, int value) {
-    if(id >= PARAMETER_COUNT) return;
-    _pane->updateParameter(id, value);
-    setCommonParameter(id, value);
+int BeepVox::getCustomParameterMin(int id) {
+    return 0;
+}
+void BeepVox::updateParameterDisplay(int id, int value) {
+    return;
+}
+void BeepVox::setCustomParameter(int id, int value) {
+    return;
+}
+int BeepVox::getCustomParameter(int id) {
+    return 0;
 }
 
 

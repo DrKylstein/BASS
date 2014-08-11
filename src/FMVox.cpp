@@ -263,8 +263,6 @@ void FMVox::pitchBend(signed int offset) {
         }
     }
 }
-void FMVox::pressureChangeNote(unsigned char note, unsigned char pressure) {
-}
 void FMVox::silence() {
 	_notesHeld = 0;
 	for(int i = 0; i < _channelCount; ++i) {
@@ -276,23 +274,53 @@ void FMVox::silence() {
 	}
 }
 
-void FMVox::resetParameters() {
-	silence(); //to initialize the held note table
-    for(int i = 0; i < PARAMETER_COUNT; i++) {
-        setParameter(i, 0);
+int FMVox::getCustomParameterMax(int id) {
+    switch(id) {
+        case P_TREMOLO_DEPTH:
+        case P_VIBRATO_DEPTH:
+        case P_MOD_TREMOLO:
+        case P_CARRIER_TREMOLO:
+        case P_MOD_VIBRATO:
+        case P_CARRIER_VIBRATO:
+        case P_MOD_HOLD:
+        case P_CARRIER_HOLD:
+        case P_AM:
+            return 1;
+        case P_MOD_ATTACK:
+        case P_CARRIER_ATTACK:
+        case P_MOD_DECAY:
+        case P_CARRIER_DECAY:
+        case P_MOD_SUSTAIN:
+        case P_CARRIER_SUSTAIN:
+        case P_MOD_RELEASE:
+        case P_CARRIER_RELEASE:
+        case P_MOD_FREQMULT:
+        case P_CARRIER_FREQMULT:
+            return 15;
+        case P_MOD_VOLUME:
+        case P_CARRIER_VOLUME:
+            return 63;
+        case P_FEEDBACK:
+        case P_MOD_WAVE:
+        case P_CARRIER_WAVE:
+            return 7;
     }
+    return 0;
 }
-static const int _divisors[FMVox::PARAMETER_COUNT] = {
-    0,0,0,0,0,6,4,6,6,
-    3,3,3,3,1,3,6,6,6,4,
-    3,3,3,3,1,3,6,6,6,4
-    
-};
-
-void FMVox::setParameter(int id, int value) {
-    if(id >= PARAMETER_COUNT) return;
+int FMVox::getCustomParameterMin(int id) {
+    //all FM parameters are unsigned
+    return 0;
+}
+void FMVox::updateParameterDisplay(int id, int value) {
     _panel->updateParameter(id, value);
-    setCommonParameter(id, value);
+}
+int FMVox::getCustomParameter(int id) {
+    //TODO
+    return 0;
+}
+
+void FMVox::setCustomParameter(int id, int value) {
+    if(id >= PARAMETER_COUNT) return;
     switch(id) {
         case P_TREMOLO_DEPTH:
             _driver->setTremoloDepth(value);
@@ -376,89 +404,6 @@ void FMVox::setParameter(int id, int value) {
     }
 }
 
-void FMVox::cc(unsigned char id, unsigned char value) {
-    switch(id) {
-        case 20:
-            setParameter(P_MOD_ATTACK, value >> _divisors[P_MOD_ATTACK]);
-            break;
-        case 21:
-            setParameter(P_MOD_DECAY, value >> _divisors[P_MOD_DECAY]);
-            break;
-        case 22:
-            setParameter(P_MOD_SUSTAIN, value >> _divisors[P_MOD_SUSTAIN]);
-            break;
-        case 23:
-            setParameter(P_MOD_RELEASE, value >> _divisors[P_MOD_RELEASE]);
-            break;
-        case 3:
-            setParameter(P_MOD_VOLUME, value >> _divisors[P_MOD_VOLUME]);
-            break;
-        case 9:
-            setParameter(P_MOD_FREQMULT, value >> _divisors[P_MOD_FREQMULT]);
-            break;
-        case 28:
-            setParameter(P_MOD_TREMOLO, value >> _divisors[P_MOD_TREMOLO]);
-            break;
-        case 29:
-            setParameter(P_MOD_VIBRATO, value >> _divisors[P_MOD_VIBRATO]);
-            break;
-        case 30:
-            setParameter(P_MOD_HOLD, value >> _divisors[P_MOD_HOLD]);
-            break;
-
-        
-        case 24:
-            setParameter(P_CARRIER_ATTACK, value >> _divisors[P_CARRIER_ATTACK]);
-            break;
-        case 25:
-            setParameter(P_CARRIER_DECAY, value >> _divisors[P_CARRIER_DECAY]);
-            break;
-        case 26:
-            setParameter(P_CARRIER_SUSTAIN, value >> _divisors[P_CARRIER_SUSTAIN]);
-            break;
-        case 27:
-            setParameter(P_CARRIER_RELEASE, value >> _divisors[P_CARRIER_RELEASE]);
-            break;
-        case 16:
-            setParameter(P_CARRIER_VOLUME, value >> _divisors[P_CARRIER_VOLUME]);
-            break;
-        case 17:
-            setParameter(P_CARRIER_FREQMULT, value >> _divisors[P_CARRIER_FREQMULT]);
-            break;
-        case 35:
-            setParameter(P_CARRIER_TREMOLO, value >> _divisors[P_CARRIER_TREMOLO]);
-            break;
-        case 41:
-            setParameter(P_CARRIER_VIBRATO, value >> _divisors[P_CARRIER_VIBRATO]);
-            break;
-        case 46:
-            setParameter(P_CARRIER_HOLD, value >> _divisors[P_CARRIER_HOLD]);
-            break;
-
-        
-        case 47:
-            setParameter(P_AM, value >> _divisors[P_AM]);
-            break;
-        case 19:
-            setParameter(P_FEEDBACK, value >> _divisors[P_FEEDBACK]);
-            break;
-        case 75:
-            setParameter(P_TREMOLO_DEPTH, value >> _divisors[P_TREMOLO_DEPTH]);
-            break;
-        case 76:
-            setParameter(P_VIBRATO_DEPTH, value >> _divisors[P_VIBRATO_DEPTH]);
-            break;
-        
-        case 14:
-            setParameter(P_MOD_WAVE, value >> _divisors[P_MOD_WAVE]);
-            break;
-        case 18:
-            setParameter(P_CARRIER_WAVE, value >> _divisors[P_CARRIER_WAVE]);
-            break;
-        default:
-            break;
-    }
-}
 FMVox::FMVox(FMDriver* driver, int firstChannel, int channelCount, Pane* panel)
 : _driver(driver), _firstChannel(firstChannel), _channelCount(channelCount), 
 _panel(panel), _bend(0) {

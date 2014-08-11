@@ -272,7 +272,7 @@ int main() {
                 screen.print(editValue, 0x07, 4, 23);
             } else {
                 int digit = pckey.getDigit();
-                if(digit != -1 && (editValue*10 + digit) < 128) {
+                if(digit != -1) {
                     editValue *= 10;
                     editValue += digit * (editValue < 0?-1:1);
                     screen.print(editValue, 0x07, 4, 23);            

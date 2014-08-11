@@ -39,11 +39,17 @@ class BeepVox: public Vox {
         enum {
             PARAMETER_COUNT = P_CUSTOM
         };
-        void resetParameters();
-        void setParameter(int id, int value);
         
 		BeepVox(BeepPane* pane);
 		~BeepVox();
+        
+    protected:
+        int getCustomParameterMax(int id);
+        int getCustomParameterMin(int id);
+        void updateParameterDisplay(int id, int value);
+        void setCustomParameter(int id, int value);
+        int getCustomParameter(int id);
+    
 	private:
 		static const unsigned short int _timingTable[2048];
 		Speaker _speaker;

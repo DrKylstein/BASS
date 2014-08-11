@@ -43,14 +43,12 @@ void MidiBoss::pollEvents() {
 	if(_dev->dataReady()) {
 		unsigned char midi_byte = _dev->read();
 		if(midi_byte == 0xF8) {
-			//std::cout << "tick!" << std::endl;
 			updateModulation(1);
 			return;
 		}
 		int i;
 		switch(_state) {
 			case BYTE_CHANNEL:
-				//std::cout << int(_command) << ", " << std::endl;
 				if( (midi_byte >= 0x80) && (midi_byte < 0xF0) ) { 
 					_channel = midi_byte & 0x0F;
 					_command = midi_byte & 0xF0;
@@ -59,43 +57,38 @@ void MidiBoss::pollEvents() {
 				break;
 			case BYTE_NOTE:
 				_note = midi_byte;
-				//std::cout << int(_note) << ", " << std::endl;
 				_state = BYTE_VELOCITY;
 				break;
 			case BYTE_VELOCITY:
 				_velocity = midi_byte;
 				_offset = (int(_note) | ( int(_velocity) << 7)) - 8192;
-				//std::cout << int(_velocity) << std::endl;
 				switch(_command) {
 					case NOTE_OFF:
 						_velocity = 0; //note-off and note-on with zero velocity are synonyms.
 					case NOTE_ON:
 						for(InstrIter it = _instruments.begin(); it != _instruments.end(); ++it) {
-							if((*it)->channel == _channel && _note >= (*it)->startingNote && _note <= (*it)->endingNote) {
+							if((*it)->getParameter(Vox::P_NOTE_CHANNEL) == _channel && _note >= (*it)->getParameter(Vox::P_FIRST_KEY) && _note <= (*it)->getParameter(Vox::P_LAST_KEY)) {
 								if(_velocity ==0) {
-									//std::cout << "stop note on " << i << std::endl;
-									(*it)->stopNote(_note + (*it)->transpose);
+									(*it)->stopNote(_note + (*it)->getParameter(Vox::P_TRANSPOSE)*12);
 								} else {
-									//std::cout << "start note on " << i << std::endl;
-									(*it)->playNote(_note + (*it)->transpose, _velocity);
+									(*it)->playNote(_note + (*it)->getParameter(Vox::P_TRANSPOSE)*12, _velocity);
 								}
 							}
 						}
 						break;
                     case CC_CHANGE:
 						for(InstrIter it = _instruments.begin(); it != _instruments.end(); ++it) {
-							if((*it)->ccChannel == _channel) {
-								(*it)->cc(_note, _velocity); //id and position of continous controller
+							if((*it)->getParameter(Vox::P_CC_CHANNEL) == _channel) {
+								(*it)->setParameter(_note, _velocity + (*it)->getParameterMin(_note)); //id and position of continous controller
 							}
 						}
                         break;
 					case PITCHBEND:
 						for(InstrIter it = _instruments.begin(); it != _instruments.end(); ++it) {
-							if((*it)->channel == _channel) {
+							if((*it)->getParameter(Vox::P_NOTE_CHANNEL) == _channel) {
 								(*it)->pitchBend(_offset);
 							}
 						}
-						//break;
 				}
 				_state = BYTE_CHANNEL;
 		}
@@ -103,11 +96,6 @@ void MidiBoss::pollEvents() {
 }
 void MidiBoss::init(MPU* dev) {
 	_dev = dev;
-	/*if(_dev->isDetected()) {
-		std::cout << "Using MPU401." <<std::endl;
-	} else {
-		std::cout << "No Midi hardware detected!" << std::endl;
-	}*/
 }
 MidiBoss::MidiBoss() {
 	_state = BYTE_CHANNEL;

@@ -33,11 +33,7 @@ class FMVox: public Vox {
 		void playNote(unsigned char note, unsigned char velocity);
 		void stopNote(unsigned char note);
 		void pitchBend(signed int offset);
-		void pressureChangeNote(unsigned char note, unsigned char pressure);
 		void silence();
-        void cc(unsigned char id, unsigned char value);
-        void setParameter(int id, int value);
-        void resetParameters();
     
         enum {
             P_AM = P_CUSTOM,
@@ -69,6 +65,14 @@ class FMVox: public Vox {
     
 		FMVox(FMDriver* driver, int firstChannel, int channelCount, Pane* panel);
 		~FMVox();
+        
+    protected:
+        int getCustomParameterMax(int id);
+        int getCustomParameterMin(int id);
+        void updateParameterDisplay(int id, int value);
+        void setCustomParameter(int id, int value);
+        int getCustomParameter(int id);
+    
 	private:
 		unsigned char _notes[MAX_POLYPHONY]; //list of all the currently playing notes
 		unsigned char _ages[MAX_POLYPHONY]; //age of corresponding notes, 0 is the oldest.
