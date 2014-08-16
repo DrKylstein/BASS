@@ -39,6 +39,7 @@ class Vox {
         int getParameterMin(int id);
         void setParameter(int id, int value);
         int getParameter(int id);
+        const char* getParameterName(int id);
             
         enum {
             P_NOTE_CHANNEL,
@@ -55,6 +56,7 @@ class Vox {
         virtual void updateParameterDisplay(int id, int value) = 0;
         virtual void setCustomParameter(int id, int value) = 0;
         virtual int getCustomParameter(int id) = 0;
+        virtual const char* getCustomParameterName(int id) = 0;
     
     private:
         int constrain(int v, int l, int h);

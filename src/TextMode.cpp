@@ -104,7 +104,7 @@ void TextMode::printHex(int num, uint8_t attrib, int x, int y) {
     } while(num);
 }
 
-static const uint8_t BOX_CHARS[3][3] = {
+static const char BOX_CHARS[3][3] = {
     {0xC9,0xCD,0xBB},
     {0xBA,0x20,0xBA},
     {0xC8,0xCD,0xBC}

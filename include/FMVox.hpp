@@ -72,6 +72,7 @@ class FMVox: public Vox {
         void updateParameterDisplay(int id, int value);
         void setCustomParameter(int id, int value);
         int getCustomParameter(int id);
+        const char* getCustomParameterName(int id);
     
 	private:
 		unsigned char _notes[MAX_POLYPHONY]; //list of all the currently playing notes

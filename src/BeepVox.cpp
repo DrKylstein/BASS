@@ -164,6 +164,9 @@ void BeepVox::setCustomParameter(int id, int value) {
 int BeepVox::getCustomParameter(int id) {
     return 0;
 }
+const char* BeepVox::getCustomParameterName(int id) {
+    return "undefined";
+}
 
 
 BeepVox::BeepVox(BeepPane* pane): _pane(pane) {

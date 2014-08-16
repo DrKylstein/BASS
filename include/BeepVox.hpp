@@ -49,6 +49,7 @@ class BeepVox: public Vox {
         void updateParameterDisplay(int id, int value);
         void setCustomParameter(int id, int value);
         int getCustomParameter(int id);
+        const char* getCustomParameterName(int id);
     
 	private:
 		static const unsigned short int _timingTable[2048];

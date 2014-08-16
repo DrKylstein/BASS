@@ -318,6 +318,38 @@ int FMVox::getCustomParameter(int id) {
     //TODO
     return 0;
 }
+static const char* _names[] = {
+    "Additive Mode",
+    "Feedback Factor",
+    "Tremolo Depth",
+    "Vibrato Depth",
+    "Modulator Attack Rate",
+    "Modulator Decay Rate",
+    "Modulator Sustain Level",
+    "Modulator Release Rate",
+    "Modulator Volume",
+    "Modulator Frequency Factor",
+    "Modulator Waveform",
+    "Modulator Tremolo Enable",
+    "Modulator Vibrato Enable",
+    "Modulator Hold Enable",
+    "Carrier Attack Rate",
+    "Carrier Decay Rate",
+    "Carrier Sustain Level",
+    "Carrier Release Rate",
+    "Carrier Volume",
+    "Carrier Frequency Factor",
+    "Carrier Waveform",
+    "Carrier Tremolo Enable",
+    "Carrier Vibrato Enable",
+    "Carrier Hold Enable"
+};
+const char* FMVox::getCustomParameterName(int id) {
+    if(id < PARAMETER_COUNT) {
+        return _names[id-P_AM];
+    }
+    return "undefined";
+}
 
 void FMVox::setCustomParameter(int id, int value) {
     if(id >= PARAMETER_COUNT) return;
