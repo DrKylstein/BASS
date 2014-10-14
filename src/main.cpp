@@ -49,7 +49,7 @@ static const char* buttons[10] = {
 };
 
 int main() {
-    Timer timer;
+    Timer timer(1000);
 	MPU mpu401;
 	MidiBoss midi;
 	midi.init(&mpu401);
@@ -257,7 +257,7 @@ int main() {
                 }
             case PG_SCREENSAVER:
                 interval = timer.getTics() - lastTics;
-                if(interval > Timer::SECOND/12) {
+                if(interval > timer.second()/12) {
                     if(scrsavI > 2000) {
                         screenSaver.fill(' ', 0x07, 0, 0, 80, 25);
                         scrsavI = 0;

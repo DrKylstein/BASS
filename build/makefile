@@ -30,11 +30,14 @@ LDFLAGS = -l=DOS -fe=../$(name).exe
 CDIR = ../src
 HDIR = ../include
 
+LCDIR = ../../DosLib/src
+LHDIR = ../../DosLib/include
+
 OBJS = main.obj MPU.obj MidiBoss.obj BeepVox.obj DebugVox.obj FMVox.obj FMDriver.obj TextMode.obj FMPane.obj PCKeys.obj BeepPane.obj Pane.obj Timer.obj Vox.obj
 lnk_dependencies = makefile
 
 
-CFLAGS += -I"$(%WATCOM)/h" -I"$(%WATCOM)/lib286" -I"$(%WATCOM)/lib286/dos" -I"$(HDIR)"
+CFLAGS += -I"$(%WATCOM)/h" -I"$(%WATCOM)/lib286" -I"$(%WATCOM)/lib286/dos" -I"$(HDIR)" -I"$(LHDIR)"
 # xd = exception handling disabled
 # o: a = global variables are never accessed through pointers, l+ optimize and unroll loops
 CFLAGS += -xs -oal+ -fo=.obj
@@ -47,8 +50,8 @@ CFLAGS += -xs -oal+ -fo=.obj
 .EXTENSIONS: .obj
 .EXTENSIONS: .c .cpp .h .hpp
 
-.c:..;$(CDIR)
-.cpp:..;$(CDIR)
+.c:..;$(CDIR);$(LCDIR)
+.cpp:..;$(CDIR);$(LCDIR)
 
 
 .c.obj :
